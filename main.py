@@ -116,7 +116,6 @@ score = 0
 score_multiplier = 1
 music_play_scheduled = False
 music_play_time = None
-music_start_time = None
 paused = False
 pause_start = None
 pause_offset = 0
@@ -273,23 +272,23 @@ while running:
                 cy = screen.get_height() // 2
                 
                 # Difficulty Rects
-                diff_left = pygame.Rect(cx - 150, cy - 155, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 155, 40, 40)
+                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
                 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy - 40, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy - 40, 40, 40)
+                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
 
                 # Input method rects
-                im_left = pygame.Rect(cx - 150, cy + 50, 40, 40)
-                im_right = pygame.Rect(cx + 110, cy + 50, 40, 40)
+                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
+                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
 
                 # Invert camera toggle rect
-                inv_label_y = cy + 130
-                inv_rect = pygame.Rect(cx - 60, cy + 160, 120, 36)
+                inv_label_y = cy + 140
+                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
                 
                 # Close Button (moved down to make space)
-                close_rect = pygame.Rect(cx - 100, cy + 230, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -343,18 +342,11 @@ while running:
                 diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
-
-                # Input method rects
-                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
-                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
-
-                # Invert camera toggle rect
-                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
+                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
 
                 # Close Button
-                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 120, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -365,19 +357,6 @@ while running:
                     current_color_idx = (current_color_idx - 1) % len(BLOCK_COLORS)
                 elif col_right.collidepoint(mx, my):
                     current_color_idx = (current_color_idx + 1) % len(BLOCK_COLORS)
-
-                elif im_left.collidepoint(mx, my):
-                    # select keyboard
-                    use_camera_controls = False
-                elif im_right.collidepoint(mx, my):
-                    # try to enable camera if available
-                    if camera_available:
-                        use_camera_controls = True
-                    else:
-                        print("Camera not available on this system.")
-                elif inv_rect.collidepoint(mx, my):
-                    # toggle invert
-                    camera_inverted = not camera_inverted
 
                 elif close_rect.collidepoint(mx, my):
                     show_settings = False
@@ -511,8 +490,6 @@ while running:
                         # enable 2x booster when streak reaches 25
                         if streak >= 25:
                             score_multiplier = 2
-                        if streak >= 50:
-                            score_multiplier = 3
                     else:
                         streak = 0
                         score_multiplier = 1
@@ -730,11 +707,8 @@ while running:
     # ---------- DRAW GAME ----------
     # Pass only the active lane labels (camera mode shows fewer lanes)
     active_labels = LANE_LABELS[:current_lanes]
-    # compute elapsed for HUD/progress bar (anchor to actual audio start if available)
-    if music_start_time is not None:
-        elapsed_for_draw = time.time() - music_start_time - pause_offset
-    else:
-        elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
+    # compute elapsed for HUD/progress bar (even when paused we show progress)
+    elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
     game_draw.render_game(screen, background, BLOCK_COLORS, active_blocks,
                           active_labels, lane_left, lane_width, LANE_SPACING,
                           hit_y, font_small, font_big, pause_button_selected,
@@ -811,37 +785,14 @@ while running:
                 pygame.mixer.music.play()
             except Exception:
                 pass
-            # confirm playback actually began using mixer state or position
-            try:
-                pos_ms = pygame.mixer.music.get_pos()
-                busy = pygame.mixer.music.get_busy()
-            except Exception:
-                pos_ms = -1
-                busy = False
-            if (pos_ms is not None and pos_ms >= 0) or busy:
-                music_started = True
-                music_start_time = time.time()
-            else:
-                music_started = False
+            music_started = True
             music_play_scheduled = False
 
         # If music has started, detect end via mixer or elapsed vs known song length
         if music_started and not show_scoreboard:
-            # Prefer mixer position when available
             elapsed_check = 0.0
-            try:
-                pos_ms = pygame.mixer.music.get_pos()
-                if pos_ms is not None and pos_ms >= 0:
-                    elapsed_check = pos_ms / 1000.0
-                elif music_start_time is not None:
-                    elapsed_check = time.time() - music_start_time - pause_offset
-                elif start_time:
-                    elapsed_check = time.time() - start_time - pause_offset
-            except Exception:
-                if music_start_time is not None:
-                    elapsed_check = time.time() - music_start_time - pause_offset
-                elif start_time:
-                    elapsed_check = time.time() - start_time - pause_offset
+            if start_time:
+                elapsed_check = time.time() - start_time - pause_offset
 
             mixer_stopped = False
             try:
@@ -856,7 +807,6 @@ while running:
                     scoreboard_entries = []
                 show_scoreboard = True
                 music_started = False
-                music_start_time = None
                 started = False
     except Exception:
         pass

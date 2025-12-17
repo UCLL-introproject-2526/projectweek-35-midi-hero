@@ -12,9 +12,15 @@ def update_game(elapsed, notes, active_blocks, BLOCK_COLORS, current_color_idx,
     """
     # Spawn notes and compute positions based on elapsed time so movement is
     # time-based and not tied to frame rate.
+    # Notes from `load_song` are time-ordered. Stop scanning once we hit a
+    # note scheduled in the future to avoid O(N) work each frame for long
+    # playlists.
     for n in notes:
         if n.get("spawned"):
             continue
+        # If the next note is in the future, we can stop early (notes are ordered)
+        if n.get("time", 0) > elapsed:
+            break
         if n["time"] <= elapsed:
             lane = n["note"] % lanes
             lane_x = lane_left + lane * (lane_width + LANE_SPACING)

@@ -1,0 +1,4 @@
+pygame
+mido
+opencv-python
+mediapipe

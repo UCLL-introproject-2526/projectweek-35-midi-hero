@@ -500,15 +500,8 @@ while running:
                             # Use MOEILIJKHEID as hit window (centered check by update_game)
                             if abs(block["rect"].y - hit_y) < MOEILIJKHEID:
                                 score += 100 * score_multiplier
-                                # remove the block immediately on successful key hit
-                                try:
-                                    # mark note as handled so it won't respawn
-                                    ni = block.get("note_index")
-                                    if ni is not None and 0 <= ni < len(notes):
-                                        notes[ni]["spawned"] = True
-                                    active_blocks.remove(block)
-                                except Exception:
-                                    pass
+                                block["color"] = (0, 255, 0)  # green feedback
+                                block["hit"] = True
                                 hit_any = True
                                 break
 
@@ -707,10 +700,6 @@ while running:
                                     active_pieces.append(lp)
                                     active_pieces.append(rp)
                                     try:
-                                        # mark original note as spawned/handled to avoid respawn
-                                        ni = block.get("note_index")
-                                        if ni is not None and 0 <= ni < len(notes):
-                                            notes[ni]["spawned"] = True
                                         active_blocks.remove(block)
                                     except Exception:
                                         pass
@@ -728,8 +717,7 @@ while running:
                    BLOCK_COLORS, current_color_idx,
                    lane_left, lane_width, LANE_SPACING,
                    MOEILIJKHEID, hit_y, music_started,
-                   lanes=current_lanes, pixels_per_second=PIXELS_PER_SECOND,
-                   active_pieces=active_pieces)
+                   lanes=current_lanes, pixels_per_second=PIXELS_PER_SECOND)
         # reset streak and trigger error flash on any missed notes removed by the logic
         if missed and missed > 0:
             streak = 0

@@ -21,7 +21,7 @@ except Exception:
 SONG_DIR = "songs"
 # Number of lanes for each input method
 LANES_KEYBOARD = 4
-LANES_CAMERA = 2
+LANES_CAMERA = 4
 LANE_KEYS = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 LANE_LABELS = ["D", "F", "J", "K"]
 

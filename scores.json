@@ -1,3 +1,40 @@
 {
-  
+  "nyan-cat": [
+    {
+      "name": "de kerstman oulleh",
+      "score": 48380,
+      "level": 1,
+      "date": "2025-12-17T09:05:19.090537"
+    }
+  ],
+  "go-your-own-way": [
+    {
+      "name": "de kerstman oulleh",
+      "score": 36480,
+      "level": 1,
+      "date": "2025-12-17T09:07:36.777691"
+    }
+  ],
+  "wii-shopping-channel": [
+    {
+      "name": "c",
+      "score": 29860,
+      "level": 1,
+      "date": "2025-12-17T09:17:29.724927"
+    }
+  ],
+  "twinkle-twinkle": [
+    {
+      "name": "skibdi toietler",
+      "score": 7160,
+      "level": 1,
+      "date": "2025-12-17T09:24:59.939305"
+    },
+    {
+      "name": "c",
+      "score": 6500,
+      "level": 1,
+      "date": "2025-12-17T09:21:51.759486"
+    }
+  ]
 }

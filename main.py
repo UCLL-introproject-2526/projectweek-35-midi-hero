@@ -727,8 +727,19 @@ while running:
     # ---------- DRAW GAME ----------
     # Pass only the active lane labels (camera mode shows fewer lanes)
     active_labels = LANE_LABELS[:current_lanes]
-    # compute elapsed for HUD/progress bar (even when paused we show progress)
-    elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
+    # compute elapsed for HUD/progress bar (use actual music start if available)
+    # Anchor progress to when music actually begins (music_play_time) so the
+    # progress bar and end-of-song checks align with audio playback.
+    anchor = None
+    if music_started and music_play_time is not None:
+        anchor = music_play_time
+    else:
+        anchor = start_time
+    elapsed_for_draw = 0.0
+    if anchor:
+        elapsed_for_draw = time.time() - anchor - pause_offset
+        if elapsed_for_draw < 0:
+            elapsed_for_draw = 0.0
     game_draw.render_game(screen, background, BLOCK_COLORS, active_blocks,
                           active_labels, lane_left, lane_width, LANE_SPACING,
                           hit_y, font_small, font_big, pause_button_selected,
@@ -801,17 +812,28 @@ while running:
     try:
         # Start scheduled playback at the visual lead time
         if music_play_scheduled and not music_started and (music_play_time is not None) and time.time() >= music_play_time:
+            # Try to start playback, but only mark `music_started` True if the mixer reports busy.
             try:
                 pygame.mixer.music.play()
+                try:
+                    # If the mixer actually started playback, get_busy() should be True.
+                    music_started = bool(pygame.mixer.music.get_busy())
+                except Exception:
+                    # If get_busy() isn't available for some reason, be conservative and
+                    # treat playback as failed to avoid immediately showing the scoreboard.
+                    music_started = False
             except Exception:
-                pass
-            music_started = True
+                music_started = False
             music_play_scheduled = False
 
         # If music has started, detect end via mixer or elapsed vs known song length
         if music_started and not show_scoreboard:
             elapsed_check = 0.0
-            if start_time:
+            # Use the actual music start time (music_play_time) to measure audio
+            # elapsed, so we don't trigger end-of-song early due to visual lead time.
+            if music_play_time is not None:
+                elapsed_check = time.time() - music_play_time - pause_offset
+            elif start_time:
                 elapsed_check = time.time() - start_time - pause_offset
 
             mixer_stopped = False

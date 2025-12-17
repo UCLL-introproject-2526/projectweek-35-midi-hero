@@ -272,23 +272,23 @@ while running:
                 cy = screen.get_height() // 2
                 
                 # Difficulty Rects
-                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
+                diff_left = pygame.Rect(cx - 150, cy - 155, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 155, 40, 40)
                 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                col_left = pygame.Rect(cx - 150, cy - 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy - 40, 40, 40)
 
                 # Input method rects
-                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
-                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
+                im_left = pygame.Rect(cx - 150, cy + 50, 40, 40)
+                im_right = pygame.Rect(cx + 110, cy + 50, 40, 40)
 
                 # Invert camera toggle rect
-                inv_label_y = cy + 140
-                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
+                inv_label_y = cy + 130
+                inv_rect = pygame.Rect(cx - 60, cy + 160, 120, 36)
                 
                 # Close Button (moved down to make space)
-                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 230, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -342,11 +342,18 @@ while running:
                 diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
+
+                # Input method rects
+                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
+                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
+
+                # Invert camera toggle rect
+                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
 
                 # Close Button
-                close_rect = pygame.Rect(cx - 100, cy + 120, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -357,6 +364,19 @@ while running:
                     current_color_idx = (current_color_idx - 1) % len(BLOCK_COLORS)
                 elif col_right.collidepoint(mx, my):
                     current_color_idx = (current_color_idx + 1) % len(BLOCK_COLORS)
+
+                elif im_left.collidepoint(mx, my):
+                    # select keyboard
+                    use_camera_controls = False
+                elif im_right.collidepoint(mx, my):
+                    # try to enable camera if available
+                    if camera_available:
+                        use_camera_controls = True
+                    else:
+                        print("Camera not available on this system.")
+                elif inv_rect.collidepoint(mx, my):
+                    # toggle invert
+                    camera_inverted = not camera_inverted
 
                 elif close_rect.collidepoint(mx, my):
                     show_settings = False

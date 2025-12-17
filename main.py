@@ -687,6 +687,8 @@ while running:
                                     streak += 1
                                     if streak >= 25:
                                         score_multiplier = 2
+                                    if streak >= 50:
+                                        score_multiplier = 3
                                     break
             else:
                 last_hand_positions = []

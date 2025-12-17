@@ -116,6 +116,7 @@ score = 0
 score_multiplier = 1
 music_play_scheduled = False
 music_play_time = None
+music_start_time = None
 paused = False
 pause_start = None
 pause_offset = 0
@@ -729,8 +730,11 @@ while running:
     # ---------- DRAW GAME ----------
     # Pass only the active lane labels (camera mode shows fewer lanes)
     active_labels = LANE_LABELS[:current_lanes]
-    # compute elapsed for HUD/progress bar (even when paused we show progress)
-    elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
+    # compute elapsed for HUD/progress bar (anchor to actual audio start if available)
+    if music_start_time is not None:
+        elapsed_for_draw = time.time() - music_start_time - pause_offset
+    else:
+        elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
     game_draw.render_game(screen, background, BLOCK_COLORS, active_blocks,
                           active_labels, lane_left, lane_width, LANE_SPACING,
                           hit_y, font_small, font_big, pause_button_selected,
@@ -807,14 +811,37 @@ while running:
                 pygame.mixer.music.play()
             except Exception:
                 pass
-            music_started = True
+            # confirm playback actually began using mixer state or position
+            try:
+                pos_ms = pygame.mixer.music.get_pos()
+                busy = pygame.mixer.music.get_busy()
+            except Exception:
+                pos_ms = -1
+                busy = False
+            if (pos_ms is not None and pos_ms >= 0) or busy:
+                music_started = True
+                music_start_time = time.time()
+            else:
+                music_started = False
             music_play_scheduled = False
 
         # If music has started, detect end via mixer or elapsed vs known song length
         if music_started and not show_scoreboard:
+            # Prefer mixer position when available
             elapsed_check = 0.0
-            if start_time:
-                elapsed_check = time.time() - start_time - pause_offset
+            try:
+                pos_ms = pygame.mixer.music.get_pos()
+                if pos_ms is not None and pos_ms >= 0:
+                    elapsed_check = pos_ms / 1000.0
+                elif music_start_time is not None:
+                    elapsed_check = time.time() - music_start_time - pause_offset
+                elif start_time:
+                    elapsed_check = time.time() - start_time - pause_offset
+            except Exception:
+                if music_start_time is not None:
+                    elapsed_check = time.time() - music_start_time - pause_offset
+                elif start_time:
+                    elapsed_check = time.time() - start_time - pause_offset
 
             mixer_stopped = False
             try:
@@ -829,6 +856,7 @@ while running:
                     scoreboard_entries = []
                 show_scoreboard = True
                 music_started = False
+                music_start_time = None
                 started = False
     except Exception:
         pass

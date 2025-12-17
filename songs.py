@@ -22,10 +22,20 @@ def find_songs(song_dir):
                 image = os.path.join(path, f)
 
         if midi and image:
+            # compute approximate song length by summing MIDI message times
+            length = 0.0
+            try:
+                mid = mido.MidiFile(midi)
+                for msg in mid:
+                    length += msg.time
+            except Exception:
+                length = 0.0
+
             songs.append({
                 "name": folder,
                 "midi": midi,
-                "image": image
+                "image": image,
+                "length": length
             })
 
     return songs

@@ -21,10 +21,10 @@
   ],
   "darude-sandstorm": [
     {
-      "name": "britt",
-      "score": 360,
+      "name": "i",
+      "score": 6040,
       "level": 1,
-      "date": "2025-12-17T08:18:22.234727"
+      "date": "2025-12-17T10:07:43.601653"
     }
   ],
   "nyan-cat": [
@@ -81,6 +81,12 @@
   ],
   "bohemian-rhapsody": [
     {
+      "name": " c",
+      "score": 48400,
+      "level": 1,
+      "date": "2025-12-17T12:59:39.433982"
+    },
+    {
       "name": "Test",
       "score": 17860,
       "level": 1,
@@ -101,12 +107,34 @@
       "date": "2025-12-17T10:07:08.741705"
     }
   ],
-  "darude-sandstorm": [
+  "rush-e": [
     {
-      "name": "i",
-      "score": 6040,
+      "name": "blablabla",
+      "score": 19180,
       "level": 1,
-      "date": "2025-12-17T10:07:43.601653"
+      "date": "2025-12-17T11:41:58.529983"
+    }
+  ],
+  "oya-lele-k3": [
+    {
+      "name": " zerfpoizrjfopij",
+      "score": 64700,
+      "level": 1,
+      "date": "2025-12-17T13:15:10.434299"
+    },
+    {
+      "name": "skibdidi gooner",
+      "score": 40780,
+      "level": 1,
+      "date": "2025-12-17T13:11:31.294681"
+    }
+  ],
+  "super-mario": [
+    {
+      "name": "zaefaze",
+      "score": 6280,
+      "level": 1,
+      "date": "2025-12-17T13:15:58.711892"
     }
   ]
 }

@@ -27,6 +27,17 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
             text = font_small.render(song["name"], True, color)
             rect = text.get_rect(center=(screen.get_width() // 2, start_y + i * 45))
             screen.blit(text, rect)
+            # show song length if available
+            length = song.get("length")
+            if length:
+                try:
+                    mins = int(length) // 60
+                    secs = int(length) % 60
+                    time_txt = f"{mins}:{secs:02d}"
+                    time_render = font_small.render(time_txt, True, (200,200,200))
+                    screen.blit(time_render, time_render.get_rect(center=(screen.get_width() // 2 + 220, start_y + i * 45)))
+                except Exception:
+                    pass
             
             if i == selected_song:
                 pygame.draw.polygon(screen, (255, 215, 0), [

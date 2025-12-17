@@ -4,7 +4,8 @@ import time
 
 def update_game(elapsed, notes, active_blocks, BLOCK_COLORS, current_color_idx,
                 lane_left, lane_width, LANE_SPACING, MOEILIJKHEID, hit_y,
-                music_started, lanes=4, pixels_per_second=300):
+                music_started, lanes=4, pixels_per_second=300,
+                active_pieces=None):
     """Spawn notes whose time has come, move blocks, and start music.
 
     Mutates `notes` (marks spawned) and `active_blocks` in-place. Returns
@@ -12,10 +13,7 @@ def update_game(elapsed, notes, active_blocks, BLOCK_COLORS, current_color_idx,
     """
     # Spawn notes and compute positions based on elapsed time so movement is
     # time-based and not tied to frame rate.
-    # Notes from `load_song` are time-ordered. Stop scanning once we hit a
-    # note scheduled in the future to avoid O(N) work each frame for long
-    # playlists.
-    for n in notes:
+    for idx, n in enumerate(notes):
         if n.get("spawned"):
             continue
         # If the next note is in the future, we can stop early (notes are ordered)
@@ -27,16 +25,25 @@ def update_game(elapsed, notes, active_blocks, BLOCK_COLORS, current_color_idx,
             # position based on how long since the note's scheduled time
             y = max(0, (elapsed - n["time"]) * pixels_per_second)
             rect = pygame.Rect(lane_x + 10, int(y), lane_width - 20, MOEILIJKHEID)
-            # simple overlap check using predicted y
+            # simple overlap check using predicted y; also consider active pieces
             overlap = False
             for b in active_blocks:
                 b_lane = int((b["rect"].centerx - lane_left) // (lane_width + LANE_SPACING))
                 if b_lane == lane and abs(b["rect"].y - rect.y) < (MOEILIJKHEID * 1.5):
                     overlap = True
                     break
+            if not overlap and active_pieces:
+                for p in active_pieces:
+                    try:
+                        p_lane = int((p["rect"].centerx - lane_left) // (lane_width + LANE_SPACING))
+                    except Exception:
+                        continue
+                    if p_lane == lane and abs(p["rect"].y - rect.y) < (MOEILIJKHEID * 1.5):
+                        overlap = True
+                        break
 
             if not overlap:
-                active_blocks.append({"rect": rect, "color": BLOCK_COLORS[current_color_idx], "time": n["time"]})
+                active_blocks.append({"rect": rect, "color": BLOCK_COLORS[current_color_idx], "time": n["time"], "note_index": idx})
                 n["spawned"] = True
 
     # Update block positions from their note time and current elapsed time

@@ -1,40 +1,96 @@
 {
-  "nyan-cat": [
-    {
-      "name": "de kerstman oulleh",
-      "score": 48380,
-      "level": 1,
-      "date": "2025-12-17T09:05:19.090537"
-    }
-  ],
-  "go-your-own-way": [
-    {
-      "name": "de kerstman oulleh",
-      "score": 36480,
-      "level": 1,
-      "date": "2025-12-17T09:07:36.777691"
-    }
-  ],
-  "wii-shopping-channel": [
-    {
-      "name": "c",
-      "score": 29860,
-      "level": 1,
-      "date": "2025-12-17T09:17:29.724927"
-    }
-  ],
   "twinkle-twinkle": [
     {
-      "name": "skibdi toietler",
-      "score": 7160,
+      "name": "wowie",
+      "score": 680,
       "level": 1,
-      "date": "2025-12-17T09:24:59.939305"
+      "date": "2025-12-16T15:24:35.169615"
     },
     {
-      "name": "c",
-      "score": 6500,
+      "name": "tesr",
+      "score": 100,
       "level": 1,
-      "date": "2025-12-17T09:21:51.759486"
+      "date": "2025-12-16T15:10:29.509270"
+    },
+    {
+      "name": "ela",
+      "score": 100,
+      "level": 1,
+      "date": "2025-12-16T15:16:31.323977"
+    }
+  ],
+  "darude-sandstorm": [
+    {
+      "name": "britt",
+      "score": 360,
+      "level": 1,
+      "date": "2025-12-17T08:18:22.234727"
+    }
+  ],
+  "nyan-cat": [
+    {
+      "name": "Sloeber",
+      "score": 52500,
+      "level": 1,
+      "date": "2025-12-17T08:58:40.800177"
+    },
+    {
+      "name": "Camera",
+      "score": 28700,
+      "level": 1,
+      "date": "2025-12-17T08:57:31.431626"
+    },
+    {
+      "name": "Pro",
+      "score": 26700,
+      "level": 1,
+      "date": "2025-12-17T09:04:05.497431"
+    },
+    {
+      "name": "Britt",
+      "score": 20020,
+      "level": 1,
+      "date": "2025-12-17T08:56:15.777573"
+    },
+    {
+      "name": "qwertyu",
+      "score": 17400,
+      "level": 1,
+      "date": "2025-12-17T09:07:23.717012"
+    },
+    {
+      "name": "b",
+      "score": 0,
+      "level": 1,
+      "date": "2025-12-17T08:52:41.797730"
+    },
+    {
+      "name": "b",
+      "score": -80,
+      "level": 1,
+      "date": "2025-12-17T08:46:42.115623"
+    }
+  ],
+  "never-gonna-give-you-up": [
+    {
+      "name": "Bomboclaaat",
+      "score": 3100,
+      "level": 1,
+      "date": "2025-12-17T09:10:08.360292"
+    }
+  ],
+  "bohemian-rhapsody": [
+    {
+      "name": "Test",
+      "score": 17860,
+      "level": 1,
+      "date": "2025-12-17T11:00:00.966648"
+    },
+    {
+      "name": "m",
+      "score": 0,
+      "level": 1,
+      "date": "2025-12-17T10:31:01.637718"
     }
   ],
   "cruel-angels-thesis": [

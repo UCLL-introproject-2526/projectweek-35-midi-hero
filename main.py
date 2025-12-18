@@ -55,6 +55,49 @@ try:
 except Exception:
     scoreboard_bg = None
 
+# Optional cat background for main menu (static first frame of cat.gif)
+cat_bg = None
+try:
+    if os.path.exists("cat.gif"):
+        try:
+            # Try to load animated frames via Pillow
+            from PIL import Image
+            im = Image.open("cat.gif")
+            frames = []
+            durations = []
+            try:
+                while True:
+                    frame = im.convert('RGBA')
+                    fw, fh = frame.size
+                    mode = frame.mode
+                    data = frame.tobytes()
+                    surf = pygame.image.frombuffer(data, (fw, fh), 'RGBA').convert_alpha()
+                    frames.append(surf)
+                    # duration in seconds
+                    dur = im.info.get('duration', 100) / 1000.0
+                    durations.append(dur)
+                    im.seek(im.tell() + 1)
+            except EOFError:
+                pass
+            if frames:
+                cat_bg = {
+                    'frames': frames,
+                    'durations': durations,
+                    'index': 0,
+                    'last_time': time.time()
+                }
+            else:
+                cat_bg = None
+        except Exception:
+            # Pillow not available or failed; fall back to single-frame load
+            try:
+                cat_s = pygame.image.load("cat.gif").convert_alpha()
+                cat_bg = cat_s
+            except Exception:
+                cat_bg = None
+except Exception:
+    cat_bg = None
+
 # ---------- CAMERA / HAND INPUT (optional) ----------
 camera_enabled = False
 cap = None
@@ -569,7 +612,7 @@ while running:
                          difficulty_level, current_color_idx, BLOCK_COLORS,
                          font_small, font_medium, font_big, gear_rect,
                          use_camera=use_camera_controls, camera_available=camera_available,
-                         camera_inverted=camera_inverted)
+                         camera_inverted=camera_inverted, background_image=cat_bg)
 
         # Draw name entry overlay if awaiting_name
         if awaiting_name:

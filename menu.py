@@ -1,12 +1,57 @@
 import pygame
+import time
 from draw_utils import draw_gear
 
 
 def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                 current_color_idx, BLOCK_COLORS, font_small, font_medium,
                 font_big, gear_rect, use_camera=False, camera_available=False,
-                camera_inverted=False):
+                camera_inverted=False, background_image=None):
+    # base background
     screen.fill((20, 20, 30))
+    # optional decorative background image (e.g. cat.gif) drawn with partial alpha
+    if background_image is not None:
+        try:
+            mw, mh = screen.get_size()
+            # If background_image is an animation dict (created in main), animate frames
+            if isinstance(background_image, dict) and 'frames' in background_image:
+                frames = background_image['frames']
+                durations = background_image.get('durations', [0.1] * len(frames))
+                idx = background_image.get('index', 0)
+                last = background_image.get('last_time', time.time())
+                now = time.time()
+                # advance frame if its duration passed
+                try:
+                    if now - last >= durations[idx]:
+                        idx = (idx + 1) % len(frames)
+                        background_image['index'] = idx
+                        background_image['last_time'] = now
+                except Exception:
+                    background_image['index'] = 0
+                    background_image['last_time'] = now
+                bg_s = frames[background_image['index']]
+                bw, bh = bg_s.get_size()
+            else:
+                # single surface
+                bg_s = background_image
+                bw, bh = bg_s.get_size()
+
+            max_w = int(mw * 0.3)
+            scale = 1.0
+            if bw > max_w:
+                scale = max_w / bw
+            new_w = int(bw * scale)
+            new_h = int(bh * scale)
+            bg_s = pygame.transform.smoothscale(bg_s, (new_w, new_h))
+            # draw at bottom-left with slight transparency
+            temp = bg_s.copy()
+            try:
+                temp.set_alpha(160)
+            except Exception:
+                pass
+            screen.blit(temp, (20, screen.get_height() - new_h - 20))
+        except Exception:
+            pass
 
     # Title
     title = font_big.render("MIDI Hero", True, (255, 255, 255))

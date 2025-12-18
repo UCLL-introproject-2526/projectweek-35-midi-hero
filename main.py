@@ -555,8 +555,14 @@ while running:
                         b_lane = int((block["rect"].centerx - lane_left) // (lane_width + LANE_SPACING))
                         if b_lane == lane_index:
                             if abs(block["rect"].y - hit_y) < MOEILIJKHEID:
-                                score += 100 * score_multiplier
-                                block["color"] = (0, 255, 0) #GROEN
+                                # Base score with streak multiplier, then apply difficulty multiplier
+                                difficulty_multiplier = 1.0
+                                if difficulty_level == 2:
+                                    difficulty_multiplier = 1.25
+                                elif difficulty_level == 3:
+                                    difficulty_multiplier = 1.50
+                                score += int(100 * score_multiplier * difficulty_multiplier)
+                                block["color"] = (0, 255, 0)  # maakt blokje groen op hit
                                 block["hit"] = True
                                 block["hit_time"] = pygame.time.get_ticks() # Store the start time of the animation
                                 hit_any = True
@@ -766,7 +772,13 @@ while running:
                                     except Exception:
                                         pass
 
-                                    score += 100 * score_multiplier
+                                    # Base score with streak multiplier, then apply difficulty multiplier
+                                    difficulty_multiplier = 1.0
+                                    if difficulty_level == 2:
+                                        difficulty_multiplier = 1.25
+                                    elif difficulty_level == 3:
+                                        difficulty_multiplier = 1.50
+                                    score += int(100 * score_multiplier * difficulty_multiplier)
                                     streak += 1
                                     if streak >= 25:
                                         score_multiplier = 2

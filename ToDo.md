@@ -3,4 +3,5 @@
 * [x] Percentage 
 * [x] END OF SONG!
 * [x] Fix buggy visuals on bottom of screen
-* [ ] Add color theme in places
+* [x] Add color theme in places
+* [ ] Add better comments in code + cleanup the code

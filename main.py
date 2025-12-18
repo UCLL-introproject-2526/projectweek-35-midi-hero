@@ -327,23 +327,23 @@ while running:
                 cy = screen.get_height() // 2
                 
                 # Difficulty Rects
-                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
+                diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
                 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
                 # Input method rects
-                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
-                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
+                im_left = pygame.Rect(cx - 150, cy + 140, 40, 40)
+                im_right = pygame.Rect(cx + 110, cy + 140, 40, 40)
 
                 # Invert camera toggle rect
-                inv_label_y = cy + 140
-                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
+                inv_label_y = cy + 190
+                inv_rect = pygame.Rect(cx - 60, cy + 210, 120, 36)
                 
                 # Close Button (moved down to make space)
-                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 270, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -393,15 +393,15 @@ while running:
                 cy = screen.get_height() // 2
 
                 # Difficulty Rects
-                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
+                diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
 
                 # Color Rects
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
                 # Close Button
-                close_rect = pygame.Rect(cx - 100, cy + 120, 200, 50)
+                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1

@@ -47,6 +47,14 @@ font_small = pygame.font.Font(None, 32)
 font_medium = pygame.font.Font(None, 48)
 font_big = pygame.font.Font(None, 72)
 
+# Optional scoreboard background image (shown for end-of-song scoreboard)
+scoreboard_bg = None
+try:
+    if os.path.exists("scoreboard.png"):
+        scoreboard_bg = pygame.image.load("scoreboard.png").convert_alpha()
+except Exception:
+    scoreboard_bg = None
+
 # ---------- CAMERA / HAND INPUT (optional) ----------
 camera_enabled = False
 cap = None
@@ -496,6 +504,10 @@ while running:
                         # enable 2x booster when streak reaches 25
                         if streak >= 25:
                             score_multiplier = 2
+                        if streak >= 100:
+                            score_multiplier = 3
+                        if streak >= 250:
+                            score_multiplier = 5
                     else:
                         streak = 0
                         score_multiplier = 1
@@ -578,6 +590,14 @@ while running:
 
         # Draw scoreboard overlay if requested
         if show_scoreboard:
+            # If this scoreboard is shown as end-of-song overlay and a background image
+            # is available, draw it behind the translucent overlay for a nicer look.
+            if end_of_song and scoreboard_bg is not None:
+                try:
+                    bg_s = pygame.transform.smoothscale(scoreboard_bg, screen.get_size())
+                    screen.blit(bg_s, (0, 0))
+                except Exception:
+                    pass
             overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
             overlay.fill((8, 12, 30, 230))
             screen.blit(overlay, (0, 0))
@@ -807,6 +827,14 @@ while running:
 
     # If scoreboard overlay is active during gameplay, render it on top before flipping
     if show_scoreboard:
+        # If this scoreboard is shown as end-of-song overlay and a background image
+        # is available, draw it behind the translucent overlay for a nicer look.
+        if end_of_song and scoreboard_bg is not None:
+            try:
+                bg_s = pygame.transform.smoothscale(scoreboard_bg, screen.get_size())
+                screen.blit(bg_s, (0, 0))
+            except Exception:
+                pass
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         overlay.fill((8, 12, 30, 230))
         screen.blit(overlay, (0, 0))

@@ -29,24 +29,6 @@
       "score": 680,
       "level": 1,
       "date": "2025-12-16T15:24:35.169615"
-    },
-    {
-      "name": "test",
-      "score": 100,
-      "level": 1,
-      "date": "2025-12-16T15:10:29.509270"
-    },
-    {
-      "name": "elaba",
-      "score": 100,
-      "level": 1,
-      "date": "2025-12-16T15:16:31.323977"
-    },
-    {
-      "name": "Player",
-      "score": 0,
-      "level": 1,
-      "date": "2025-12-18T08:55:21.734637"
     }
   ],
   "darude-sandstorm": [
@@ -59,28 +41,10 @@
   ],
   "nyan-cat": [
     {
-      "name": "fjaezf",
-      "score": 67300,
-      "level": 1,
-      "date": "2025-12-18T09:36:17.462068"
-    },
-    {
       "name": "Sloeber",
       "score": 52500,
       "level": 1,
       "date": "2025-12-17T08:58:40.800177"
-    },
-    {
-      "name": "qqq",
-      "score": 41920,
-      "level": 1,
-      "date": "2025-12-17T14:35:16.039530"
-    },
-    {
-      "name": "Player",
-      "score": 30180,
-      "level": 1,
-      "date": "2025-12-18T08:52:49.499526"
     },
     {
       "name": "maxim",
@@ -89,106 +53,16 @@
       "date": "2025-12-18T11:09:18.906714"
     },
     {
-      "name": "Camera",
-      "score": 28700,
-      "level": 1,
-      "date": "2025-12-17T08:57:31.431626"
-    },
-    {
       "name": "Pro",
       "score": 26700,
       "level": 1,
       "date": "2025-12-17T09:04:05.497431"
     },
     {
-      "name": "gfd",
-      "score": 23960,
-      "level": 1,
-      "date": "2025-12-17T15:16:57.263141"
-    },
-    {
       "name": "Britt",
       "score": 20020,
       "level": 1,
       "date": "2025-12-17T08:56:15.777573"
-    },
-    {
-      "name": "yigi",
-      "score": 19100,
-      "level": 1,
-      "date": "2025-12-17T15:24:11.588505"
-    },
-    {
-      "name": "qwertyu",
-      "score": 17400,
-      "level": 1,
-      "date": "2025-12-17T09:07:23.717012"
-    },
-    {
-      "name": "TEst",
-      "score": 17300,
-      "level": 1,
-      "date": "2025-12-17T13:54:27.041499"
-    },
-    {
-      "name": "qwertyu",
-      "score": 14300,
-      "level": 1,
-      "date": "2025-12-17T14:30:34.419500"
-    },
-    {
-      "name": "sdfghjkl",
-      "score": 9920,
-      "level": 1,
-      "date": "2025-12-17T14:31:17.440089"
-    },
-    {
-      "name": "jygjg",
-      "score": 8640,
-      "level": 1,
-      "date": "2025-12-17T14:58:45.295716"
-    },
-    {
-      "name": "jygu",
-      "score": 7500,
-      "level": 1,
-      "date": "2025-12-17T15:25:10.286585"
-    },
-    {
-      "name": "qwert",
-      "score": 6900,
-      "level": 1,
-      "date": "2025-12-17T14:25:47.917537"
-    },
-    {
-      "name": "qwer",
-      "score": 6600,
-      "level": 1,
-      "date": "2025-12-17T14:58:15.418175"
-    },
-    {
-      "name": "Player",
-      "score": 3680,
-      "level": 1,
-      "date": "2025-12-18T09:04:39.356398"
-    },
-    {
-      "name": "qwertyu",
-      "score": 1980,
-      "level": 1,
-      "date": "2025-12-17T14:24:56.331256"
-    },
-    {
-      "name": "b",
-      "score": 0,
-      "level": 1,
-      "date": "2025-12-17T08:52:41.797730"
-    },
-    {
-      "name": "b",
-      "score": -80,
-      "level": 1,
-      "date": "2025-12-17T08:46:42.115623"
     }
   ],
   "never-gonna-give-you-up": [
@@ -207,47 +81,15 @@
   ],
   "bohemian-rhapsody": [
     {
-      "name": " c",
-      "score": 48400,
-      "level": 1,
-      "date": "2025-12-17T12:59:39.433982"
-    },
-    {
-      "name": "Test",
-      "score": 17860,
-      "level": 1,
-      "date": "2025-12-17T11:00:00.966648"
-    },
-    {
-      "name": "m",
+      "name": "maxim",
       "score": 0,
       "level": 1,
       "date": "2025-12-17T10:31:01.637718"
     }
   ],
-  "cruel-angels-thesis": [
-    {
-      "name": " ezoifjazeoifjazoiej",
-      "score": 56120,
-      "level": 1,
-      "date": "2025-12-17T10:07:08.741705"
-    }
-  ],
-  "rush-e": [
-    {
-      "name": "blablabla",
-      "score": 19180,
-      "level": 1,
-      "date": "2025-12-17T11:41:58.529983"
-    }
-  ],
+  "cruel-angels-thesis": [],
+  "rush-e": [],
   "oya-lele-k3": [
-    {
-      "name": " zerfpoizrjfopij",
-      "score": 64700,
-      "level": 1,
-      "date": "2025-12-17T13:15:10.434299"
-    },
     {
       "name": "skibdidi gooner",
       "score": 40780,
@@ -255,40 +97,14 @@
       "date": "2025-12-17T13:11:31.294681"
     }
   ],
-  "super-mario": [
-    {
-      "name": "zaefaze",
-      "score": 6280,
-      "level": 1,
-      "date": "2025-12-17T13:15:58.711892"
-    }
-  ],
+  "super-mario": [],
   "wii-shopping-channel": [
-    {
-      "name": "Test",
-      "score": 13340,
-      "level": 1,
-      "date": "2025-12-17T13:40:06.063277"
-    },
     {
       "name": "cedric",
       "score": 8340,
       "level": 1,
       "date": "2025-12-17T14:36:46.154759"
-    },
-    {
-      "name": "qwertyu",
-      "score": 1500,
-      "level": 1,
-      "date": "2025-12-17T13:40:30.117933"
     }
   ],
-  "naruto": [
-    {
-      "name": "azef",
-      "score": 15820,
-      "level": 1,
-      "date": "2025-12-18T10:09:31.475429"
-    }
-  ]
+  "naruto": []
 }

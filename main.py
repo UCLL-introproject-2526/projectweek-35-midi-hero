@@ -496,6 +496,10 @@ while running:
                         # enable 2x booster when streak reaches 25
                         if streak >= 25:
                             score_multiplier = 2
+                        if streak >= 100:
+                            score_multiplier = 3
+                        if streak >= 250:
+                            score_multiplier = 5
                     else:
                         streak = 0
                         score_multiplier = 1

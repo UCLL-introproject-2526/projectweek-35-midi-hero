@@ -50,7 +50,7 @@ def render_game(screen,
 
     # hit lijn (voor keyboard controls)
     if not use_camera:
-        pygame.draw.line(screen, (255, 0, 0), (0, hit_y), (screen.get_width(), hit_y), 3)
+        pygame.draw.line(screen, (255, 0, 0), (0, hit_y), (screen.get_width(), hit_y), 5)
 
     # lane labels
     for i, label in enumerate(LANE_LABELS):

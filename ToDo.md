@@ -7,3 +7,4 @@
 * [x] Popping blocks
 * [ ] Add better comments in code + cleanup the code
 * [ ] Fix bug where pausing doesn't stop scoreboard countdown
+* [ ] Fix bug where player can hit blocks that are under the hit line

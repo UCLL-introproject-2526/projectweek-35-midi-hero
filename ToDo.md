@@ -4,4 +4,5 @@
 * [x] END OF SONG!
 * [x] Fix buggy visuals on bottom of screen
 * [x] Add color theme in places
+* [x] Popping blocks
 * [ ] Add better comments in code + cleanup the code

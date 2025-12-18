@@ -83,14 +83,25 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
     # Song List
     start_y = 240
     if songs:
+        # Calculate bounds for all songs
+        song_left = screen.get_width() // 2 - 200
+        song_right = screen.get_width() // 2 + 200
+        song_top = start_y - 25
+        song_bottom = start_y + len(songs) * 45 + 25
+        
+        # Draw border around all songs
+        song_list_rect = pygame.Rect(song_left, song_top, song_right - song_left, song_bottom - song_top)
+        pygame.draw.rect(screen, (72, 210, 203), song_list_rect, 3, border_radius=8)
+        
         for i, song in enumerate(songs):
-            color = (255, 215, 0) if i == selected_song else (150, 150, 150)
+            color = (255, 176, 31) if i == selected_song else (150, 150, 150)
             text = font_small.render(song["name"], True, color)
             rect = text.get_rect(center=(screen.get_width() // 2, start_y + i * 45))
+            
             screen.blit(text, rect)
             
             if i == selected_song:
-                pygame.draw.polygon(screen, (255, 215, 0), [
+                pygame.draw.polygon(screen, (255, 176, 31), [
                     (rect.left - 20, rect.centery),
                     (rect.left - 30, rect.top),
                     (rect.left - 30, rect.bottom)
@@ -113,16 +124,16 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
             panel_x = screen.get_width() - panel_w - 80
             panel_y = 200
             panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
-            pygame.draw.rect(screen, (30,30,40), panel_rect, border_radius=8)
-            pygame.draw.rect(screen, (80,80,100), panel_rect, 2, border_radius=8)
-            hdr = font_medium.render('Top Scores', True, (255,255,0))
+            pygame.draw.rect(screen, (40, 50, 70), panel_rect, border_radius=8)
+            pygame.draw.rect(screen, (72, 210, 203), panel_rect, 2, border_radius=8)
+            hdr = font_medium.render('Top Scores', True, (255, 176, 31))
             screen.blit(hdr, hdr.get_rect(midtop=(panel_rect.centerx, panel_rect.top + 12)))
             y = panel_rect.top + 56
 
             for i, e in enumerate(entries[:6]):
-                rank = font_small.render(str(i+1), True, (240,200,50))
+                rank = font_small.render(str(i+1), True, (255, 176, 31))
                 name = font_small.render(e.get('name','?'), True, (230,230,230))
-                sc = font_small.render(str(e.get('score',0)), True, (0,220,120))
+                sc = font_small.render(str(e.get('score',0)), True, (72, 210, 203))
                 screen.blit(rank, rank.get_rect(topleft=(panel_rect.left + 12, y)))
                 screen.blit(name, name.get_rect(topleft=(panel_rect.left + 48, y)))
                 screen.blit(sc, sc.get_rect(topright=(panel_rect.right - 12, y)))
@@ -147,8 +158,8 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         cx, cy = screen.get_width() // 2, screen.get_height() // 2
         box_width, box_height = 600, 550
         box_rect = pygame.Rect(cx - box_width//2, cy - box_height//2, box_width, box_height)
-        pygame.draw.rect(screen, (40, 40, 50), box_rect, border_radius=15)
-        pygame.draw.rect(screen, (100, 100, 120), box_rect, 3, border_radius=15)
+        pygame.draw.rect(screen, (40, 50, 70), box_rect, border_radius=15)
+        pygame.draw.rect(screen, (72, 210, 203), box_rect, 3, border_radius=15)
 
         # settings opties
         s_title = font_medium.render("SETTINGS", True, (255, 255, 255))
@@ -163,7 +174,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         pygame.draw.rect(screen, (70, 70, 80), diff_right, border_radius=5)
         screen.blit(font_small.render("<", True, (255,255,255)), font_small.render("<", True, (255,255,255)).get_rect(center=diff_left.center))
         screen.blit(font_small.render(">", True, (255,255,255)), font_small.render(">", True, (255,255,255)).get_rect(center=diff_right.center))
-        d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 215, 0))
+        d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 176, 31))
         screen.blit(d_val, d_val.get_rect(center=(cx, cy - 50)))
 
         # kleur selector
@@ -178,7 +189,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
 
         preview_rect = pygame.Rect(cx - 40, cy + 30, 80, 60)
         pygame.draw.rect(screen, BLOCK_COLORS[current_color_idx], preview_rect, border_radius=10)
-        pygame.draw.rect(screen, (255, 255, 255), preview_rect, 2, border_radius=10)
+        pygame.draw.rect(screen, (72, 210, 203), preview_rect, 2, border_radius=10)
 
         # input method selector
         im_label = font_small.render("INPUT METHOD", True, (180, 180, 180))
@@ -201,16 +212,16 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         inv_label = font_small.render("INVERT CAMERA", True, (180, 180, 180))
         screen.blit(inv_label, inv_label.get_rect(center=(cx, cy + 190)))
         inv_rect = pygame.Rect(cx - 60, cy + 210, 120, 36)
-        inv_color = (70, 70, 80)
+        inv_color = (40, 50, 70)
         pygame.draw.rect(screen, inv_color, inv_rect, border_radius=6)
         inv_text = "ON" if camera_inverted else "OFF"
-        inv_col = (0, 200, 0) if camera_inverted else (160, 160, 160)
+        inv_col = (72, 210, 203) if camera_inverted else (160, 160, 160)
         inv_val = font_small.render(inv_text, True, (255,255,255))
         pygame.draw.rect(screen, inv_col, (inv_rect.left + 6, inv_rect.top + 6, inv_rect.width - 12, inv_rect.height - 12), border_radius=4)
         screen.blit(inv_val, inv_val.get_rect(center=inv_rect.center))
 
         close_rect = pygame.Rect(cx - 100, cy + 270, 200, 50)
-        c_color = (200, 50, 50) if close_rect.collidepoint(mouse_pos) else (150, 40, 40)
+        c_color = (255, 176, 31) if close_rect.collidepoint(mouse_pos) else (255, 170, 20)
         pygame.draw.rect(screen, c_color, close_rect, border_radius=10)
         close_txt = font_small.render("SAVE & CLOSE", True, (255, 255, 255))
         screen.blit(close_txt, close_txt.get_rect(center=close_rect.center))
@@ -236,8 +247,8 @@ def render_settings_overlay(screen,
     cx, cy = screen.get_width() // 2, screen.get_height() // 2
     box_width, box_height = 600, 550
     box_rect = pygame.Rect(cx - box_width//2, cy - box_height//2, box_width, box_height)
-    pygame.draw.rect(screen, (40, 40, 50), box_rect, border_radius=15)
-    pygame.draw.rect(screen, (100, 100, 120), box_rect, 3, border_radius=15)
+    pygame.draw.rect(screen, (40, 50, 70), box_rect, border_radius=15)
+    pygame.draw.rect(screen, (72, 210, 203), box_rect, 3, border_radius=15)
 
     # settings opties
     s_title = font_medium.render("SETTINGS", True, (255, 255, 255))
@@ -252,7 +263,7 @@ def render_settings_overlay(screen,
     pygame.draw.rect(screen, (70, 70, 80), diff_right, border_radius=5)
     screen.blit(font_small.render("<", True, (255,255,255)), font_small.render("<", True, (255,255,255)).get_rect(center=diff_left.center))
     screen.blit(font_small.render(">", True, (255,255,255)), font_small.render(">", True, (255,255,255)).get_rect(center=diff_right.center))
-    d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 215, 0))
+    d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 176, 31))
     screen.blit(d_val, d_val.get_rect(center=(cx, cy - 50)))
 
     # kleur selector
@@ -267,10 +278,10 @@ def render_settings_overlay(screen,
 
     preview_rect = pygame.Rect(cx - 40, cy + 30, 80, 60)
     pygame.draw.rect(screen, BLOCK_COLORS[current_color_idx], preview_rect, border_radius=10)
-    pygame.draw.rect(screen, (255, 255, 255), preview_rect, 2, border_radius=10)
+    pygame.draw.rect(screen, (72, 210, 203), preview_rect, 2, border_radius=10)
 
     close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
-    c_color = (200, 50, 50) if close_rect.collidepoint(mouse_pos) else (150, 40, 40)
+    c_color = (255, 176, 31) if close_rect.collidepoint(mouse_pos) else (255, 170, 20)
     pygame.draw.rect(screen, c_color, close_rect, border_radius=10)
     close_txt = font_small.render("SAVE & CLOSE", True, (255, 255, 255))
     screen.blit(close_txt, close_txt.get_rect(center=close_rect.center))

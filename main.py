@@ -105,6 +105,7 @@ show_scoreboard = False
 scoreboard_entries = []
 current_song_length = 0.0
 end_of_song = False
+bar_full_at = None  # timestamp when progress bar first reached 100%
 
 # ---------- GAME STATE ----------
 started = False
@@ -236,6 +237,7 @@ while running:
             score = 0
             music_started = False
             started = False
+            bar_full_at = None
             continue
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -433,6 +435,7 @@ while running:
                             current_song_key = songs[pending_song_index]["name"]
                             current_song_length = length
                             pending_song_index = None
+                            bar_full_at = None
                     elif event.key == pygame.K_ESCAPE:
                         awaiting_name = False
                         pending_song_index = None
@@ -468,6 +471,7 @@ while running:
                 lead_time = (hit_y - block_center_offset) / PIXELS_PER_SECOND
                 music_play_time = start_time + lead_time
                 music_play_scheduled = True
+                bar_full_at = None
 
             elif event.type == pygame.KEYDOWN and started and not paused:
                 if event.key in LANE_KEYS:
@@ -726,11 +730,60 @@ while running:
                           elapsed=elapsed_for_draw, song_length=current_song_length,
                           score_multiplier=score_multiplier)
 
+    # Additional robustness: if the progress fraction reaches 100% (visual),
+    # start the same 5s timer to show the scoreboard. This ensures the
+    # scoreboard appears even if notes/blocks logic didn't fully clear.
+    try:
+        if current_song_length and current_song_length > 0 and not show_scoreboard:
+            frac = elapsed_for_draw / current_song_length
+            if frac >= 0.999:
+                if bar_full_at is None:
+                    bar_full_at = time.time()
+                    print(f"[DEBUG] bar_full_at set from progress fraction at {bar_full_at:.3f}, frac={frac:.3f}", flush=True)
+    except Exception:
+        pass
+
+    # Centralized finalization: if bar_full_at was set (by any branch) and 5s passed,
+    # commit score and display scoreboard. This guarantees the overlay appears.
+    try:
+        if bar_full_at is not None and not show_scoreboard:
+            if time.time() - bar_full_at >= 5.0:
+                print(f"[DEBUG] 5s passed since bar_full_at ({bar_full_at:.3f}); finalizing scoreboard.", flush=True)
+                if current_song_key:
+                    scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
+                else:
+                    scoreboard_entries = []
+                show_scoreboard = True
+                music_started = False
+                started = False
+                end_of_song = True
+                bar_full_at = None
+                print(f"[DEBUG] show_scoreboard=True (central), end_of_song={end_of_song}", flush=True)
+    except Exception:
+        pass
+
     # If settings opened from pause, render the settings overlay on top of the game
     if show_settings and not in_menu:
         menu.render_settings_overlay(screen, show_settings, difficulty_level,
                                     current_color_idx, BLOCK_COLORS,
                                     font_small, font_medium, font_big)
+
+    # If the 5s timer is running (bar_full_at set) but the scoreboard hasn't appeared yet,
+    # draw a fade so the player sees the background dim before the scoreboard appears.
+    if bar_full_at is not None and not show_scoreboard:
+        try:
+            elapsed_since_full = max(0.0, time.time() - bar_full_at)
+            t = min(1.0, elapsed_since_full / 5.0)
+            alpha = int(180 * t)  # fade-in alpha over 5 seconds
+            fade = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+            fade.fill((0, 0, 0, alpha))
+            screen.blit(fade, (0, 0))
+            # show small countdown text
+            remaining = max(0, 5 - int(elapsed_since_full))
+            info = font_small.render(f"Scoreboard in {remaining}s...", True, (220,220,220))
+            screen.blit(info, info.get_rect(center=(screen.get_width()//2, screen.get_height() - 120)))
+        except Exception:
+            pass
 
     # Keep decrementing error_flash locally (render_game doesn't mutate it)
     if error_flash > 0:
@@ -821,15 +874,25 @@ while running:
                 mixer_stopped = False
             # Only finish the song if the music stopped (or the elapsed >= length) AND all notes have spawned
             all_spawned = all(n.get("spawned") for n in notes) if notes else True
+            # If the track finished (mixer stopped or elapsed >= song length) and the scene is clear,
+            # start a 5s timer from the moment the progress bar reaches 100% before showing scoreboard.
             if (mixer_stopped or (current_song_length and elapsed_check >= (current_song_length - 0.05))) and all_spawned and not active_blocks and not active_pieces:
-                if current_song_key:
-                    scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
-                else:
-                    scoreboard_entries = []
-                show_scoreboard = True
-                music_started = False
-                started = False
-                end_of_song = True
+                if bar_full_at is None:
+                    bar_full_at = time.time()
+                    print(f"[DEBUG] bar_full_at set from audio branch at {bar_full_at:.3f}, elapsed_check={elapsed_check:.3f}, mixer_stopped={mixer_stopped}")
+                # after 5 seconds, commit score and show scoreboard
+                if time.time() - bar_full_at >= 5.0:
+                    print(f"[DEBUG] 5s elapsed since bar_full_at (audio branch). Saving score and showing scoreboard.")
+                    if current_song_key:
+                        scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
+                    else:
+                        scoreboard_entries = []
+                    show_scoreboard = True
+                    music_started = False
+                    started = False
+                    end_of_song = True
+                    bar_full_at = None
+                    print(f"[DEBUG] show_scoreboard=True, end_of_song={end_of_song}")
     except Exception:
         pass
 
@@ -837,19 +900,25 @@ while running:
     # When music started and no active blocks left and all notes spawned -> song finished
     if music_started and not paused and not started:
         pass
-    if music_started and not paused:
+    if started and not paused:
         all_spawned = all(n.get("spawned") for n in notes) if notes else True
         if all_spawned and not active_blocks and not active_pieces:
-            # song finished
-            music_started = False
-            started = False
-            # save score and show scoreboard overlay
-            if current_song_key:
-                scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
-            else:
-                scoreboard_entries = []
-            show_scoreboard = True
-            end_of_song = True
+            # Song finished visually — start the 5s post-bar timer if not already running
+            if bar_full_at is None:
+                bar_full_at = time.time()
+                print(f"[DEBUG] bar_full_at set from visual branch at {bar_full_at:.3f}")
+            if time.time() - bar_full_at >= 5.0:
+                print(f"[DEBUG] 5s elapsed since bar_full_at (visual branch). Saving score and showing scoreboard.")
+                music_started = False
+                started = False
+                if current_song_key:
+                    scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
+                else:
+                    scoreboard_entries = []
+                show_scoreboard = True
+                end_of_song = True
+                bar_full_at = None
+                print(f"[DEBUG] show_scoreboard=True, end_of_song={end_of_song}")
 
     # If scoreboard overlay shown, wait for key to return to menu
     if show_scoreboard:
@@ -888,6 +957,7 @@ while running:
                         music_started = False
                         show_scoreboard = False
                         end_of_song = False
+                        bar_full_at = None
                         break
                     elif menu_rect.collidepoint(mx, my):
                         show_scoreboard = False
@@ -903,6 +973,7 @@ while running:
                         score = 0
                         music_started = False
                         started = False
+                        bar_full_at = None
                         break
                 elif ev.type == pygame.KEYDOWN:
                     # treat any key as 'back to menu'

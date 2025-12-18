@@ -10,7 +10,7 @@ from songs import find_songs, load_song
 from draw_utils import draw_gear
 import cv2
 
-# Try to import MediaPipe for better hand detection; fall back gracefully
+# schizo
 try:
     import mediapipe as mp
     HAVE_MEDIAPIPE = True
@@ -19,13 +19,12 @@ except Exception:
 
 # ---------- CONFIG ----------
 SONG_DIR = "songs"
-# Number of lanes for each input method
+
 LANES_KEYBOARD = 4
 LANES_CAMERA = 4
 LANE_KEYS = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 LANE_LABELS = ["D", "F", "J", "K"]
 
-# Color presets for blocks
 BLOCK_COLORS = [
     (0, 200, 200),  # Cyan
     (255, 50, 50),  # Red
@@ -47,28 +46,29 @@ font_small = pygame.font.Font(None, 32)
 font_medium = pygame.font.Font(None, 48)
 font_big = pygame.font.Font(None, 72)
 
-# Optional scoreboard background image (shown for end-of-song scoreboard)
+# scoreboard achtergrond image
 scoreboard_bg = None
 try:
     if os.path.exists("scoreboard.png"):
         scoreboard_bg = pygame.image.load("scoreboard.png").convert_alpha()
+
 except Exception:
     scoreboard_bg = None
 
-# Optional title image
+# title image
 title_img = None
 try:
     if os.path.exists("title.png"):
         title_img = pygame.image.load("title.png").convert_alpha()
+
 except Exception:
     title_img = None
 
-# Optional cat background for main menu (static first frame of cat.gif)
+# nyan cat nyan cat nyan cat
 cat_bg = None
 try:
     if os.path.exists("cat.gif"):
         try:
-            # Try to load animated frames via Pillow
             from PIL import Image
             im = Image.open("cat.gif")
             frames = []
@@ -81,10 +81,10 @@ try:
                     data = frame.tobytes()
                     surf = pygame.image.frombuffer(data, (fw, fh), 'RGBA').convert_alpha()
                     frames.append(surf)
-                    # duration in seconds
                     dur = im.info.get('duration', 100) / 1000.0
                     durations.append(dur)
                     im.seek(im.tell() + 1)
+
             except EOFError:
                 pass
             if frames:
@@ -94,19 +94,22 @@ try:
                     'index': 0,
                     'last_time': time.time()
                 }
+
             else:
                 cat_bg = None
+
         except Exception:
-            # Pillow not available or failed; fall back to single-frame load
             try:
                 cat_s = pygame.image.load("cat.gif").convert_alpha()
                 cat_bg = cat_s
+
             except Exception:
                 cat_bg = None
+
 except Exception:
     cat_bg = None
 
-# ---------- CAMERA / HAND INPUT (optional) ----------
+# ---------- input ----------
 camera_enabled = False
 cap = None
 mp_hands = None
@@ -128,6 +131,7 @@ if HAVE_MEDIAPIPE:
                                                 min_tracking_confidence=0.5)
         else:
             camera_available = False
+
     except Exception as e:
         print("Camera init failed:", e)
         camera_available = False
@@ -146,7 +150,7 @@ if not songs:
 
 # ---------- SETTINGS ----------
 difficulty_level = 1
-MOEILIJKHEID = 100  # Startwaarde
+MOEILIJKHEID = 100
 current_color_idx = 0
 show_settings = False
 settings_from_pause = False
@@ -207,6 +211,7 @@ def _load_scores_file(path):
         if os.path.exists(path):
             with open(path, 'r', encoding='utf-8') as f:
                 return json.load(f)
+            
     except Exception:
         pass
     return {}
@@ -217,6 +222,7 @@ def _save_scores_file(path, data):
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         return True
+    
     except Exception:
         return False
 
@@ -338,23 +344,23 @@ while running:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
                 
-                # Difficulty Rects
+                # moeijlijkheid
                 diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
                 diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
                 
-                # Color Rects
+                # kleurtjes
                 col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
                 col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
-                # Input method rects
+                # input mode
                 im_left = pygame.Rect(cx - 150, cy + 140, 40, 40)
                 im_right = pygame.Rect(cx + 110, cy + 140, 40, 40)
 
-                # Invert camera toggle rect
+                # invert camera
                 inv_label_y = cy + 190
                 inv_rect = pygame.Rect(cx - 60, cy + 210, 120, 36)
                 
-                # Close Button (moved down to make space)
+                # close & save
                 close_rect = pygame.Rect(cx - 100, cy + 270, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
@@ -402,15 +408,15 @@ while running:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
 
-                # Difficulty Rects
+                # moeilijkheid
                 diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
                 diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
 
-                # Color Rects
+                # kleur
                 col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
                 col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
-                # Close Button
+                # close & save
                 close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
@@ -867,6 +873,7 @@ while running:
             remaining = max(0, 5 - int(elapsed_since_full))
             info = font_small.render(f"Scoreboard in {remaining}s...", True, (220,220,220))
             screen.blit(info, info.get_rect(center=(screen.get_width()//2, screen.get_height() - 120)))
+
         except Exception:
             pass
 
@@ -876,6 +883,7 @@ while running:
     if active_pieces:
         dt = clock.get_time() / 1000.0
         gravity = 800
+
         for p in list(active_pieces):
             p["vy"] += gravity * dt
             p["rect"].x += int(p["vx"] * dt)
@@ -885,6 +893,7 @@ while running:
             if p["life"] <= 0 or p["rect"].y > screen.get_height() + 200:
                 try:
                     active_pieces.remove(p)
+
                 except Exception:
                     pass
 
@@ -893,8 +902,10 @@ while running:
             try:
                 bg_s = pygame.transform.smoothscale(scoreboard_bg, screen.get_size())
                 screen.blit(bg_s, (0, 0))
+
             except Exception:
                 pass
+
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         overlay.fill((8, 12, 30, 230))
         screen.blit(overlay, (0, 0))
@@ -906,6 +917,7 @@ while running:
         screen.blit(sub, sub.get_rect(center=(cx, 120)))
         start_y = 170
         max_show = 10
+
         for i, e in enumerate(scoreboard_entries[:max_show]):
             rank = font_small.render(f"{i+1}", True, (240,200,50))
             name = font_medium.render(e.get('name','?'), True, (255,255,255))
@@ -943,6 +955,7 @@ while running:
         if music_play_scheduled and not music_started and (music_play_time is not None) and time.time() >= music_play_time:
             try:
                 pygame.mixer.music.play()
+
             except Exception:
                 pass
             music_started = True
@@ -956,6 +969,7 @@ while running:
             mixer_stopped = False
             try:
                 mixer_stopped = not pygame.mixer.music.get_busy()
+
             except Exception:
                 mixer_stopped = False
             
@@ -979,6 +993,7 @@ while running:
                     end_of_song = True
                     bar_full_at = None
                     print(f"[DEBUG] show_scoreboard=True, end_of_song={end_of_song}")
+
     except Exception:
         pass
 
@@ -1100,10 +1115,12 @@ pygame.quit()
 if 'cap' in globals() and cap is not None:
     try:
         cap.release()
+
     except Exception:
         pass
 if 'mp_hands' in globals() and mp_hands is not None:
     try:
         mp_hands.close()
+
     except Exception:
         pass

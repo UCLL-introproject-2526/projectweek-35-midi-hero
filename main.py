@@ -648,18 +648,18 @@ while running:
         try:
             if selected_song is not None and selected_song < len(songs):
                 selected_song_path = songs[selected_song]["midi"]
-                print(f"[DEBUG] Selected song {selected_song}: {selected_song_path}, currently playing: {preview_song_playing}", flush=True)
+                #print(f"[DEBUG] Selected song {selected_song}: {selected_song_path}, currently playing: {preview_song_playing}", flush=True)
                 if selected_song_path != preview_song_playing:
-                    print(f"[DEBUG] Song changed, loading new preview...", flush=True)
+                    #print(f"[DEBUG] Song changed, loading new preview...", flush=True)
                     try:
                         pygame.mixer.music.stop()
                     except Exception as e:
                         print(f"[DEBUG] Error stopping music: {e}", flush=True)
                     try:
                         pygame.mixer.music.load(selected_song_path)
-                        print(f"[DEBUG] Music loaded successfully", flush=True)
+                        #print(f"[DEBUG] Music loaded successfully", flush=True)
                         pygame.mixer.music.play(-1)  # Opnieuw bveginne
-                        print(f"[DEBUG] Music playing (loop -1)", flush=True)
+                        #print(f"[DEBUG] Music playing (loop -1)", flush=True)
                         preview_song_playing = selected_song_path
                         preview_song_index = selected_song
                     except Exception as e:

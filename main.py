@@ -55,6 +55,14 @@ try:
 except Exception:
     scoreboard_bg = None
 
+# Optional title image
+title_img = None
+try:
+    if os.path.exists("title.png"):
+        title_img = pygame.image.load("title.png").convert_alpha()
+except Exception:
+    title_img = None
+
 # Optional cat background for main menu (static first frame of cat.gif)
 cat_bg = None
 try:
@@ -617,7 +625,7 @@ while running:
                          difficulty_level, current_color_idx, BLOCK_COLORS,
                          font_small, font_medium, font_big, gear_rect,
                          use_camera=use_camera_controls, camera_available=camera_available,
-                         camera_inverted=camera_inverted, background_image=cat_bg)
+                         camera_inverted=camera_inverted, background_image=cat_bg, title_image=title_img)
 
         if awaiting_name:
             overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)

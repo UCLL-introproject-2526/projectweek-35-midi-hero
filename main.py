@@ -9,6 +9,7 @@ import math
 from songs import find_songs, load_song
 from draw_utils import draw_gear
 import cv2
+import ctypes
 
 # schizo
 try:
@@ -37,6 +38,9 @@ BLOCK_COLORS = [
 pygame.init()
 pygame.mixer.init()
 
+
+ctypes.windll.user32.SetProcessDPIAware()
+true_res = (ctypes.windll.user32.GetSystemMetrics(0),ctypes.windll.user32.GetSystemMetrics(1))
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("MIDI Hero")
 

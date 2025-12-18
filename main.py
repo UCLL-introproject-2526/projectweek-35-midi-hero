@@ -564,7 +564,8 @@ while running:
                     for block in active_blocks:
                         b_lane = int((block["rect"].centerx - lane_left) // (lane_width + LANE_SPACING))
                         if b_lane == lane_index:
-                            if abs(block["rect"].y - hit_y) < MOEILIJKHEID:
+                            # Only register a hit if the block is at or above the hit line
+                            if abs(block["rect"].y - hit_y) < MOEILIJKHEID and block["rect"].y <= hit_y:
                                 # Base score with streak multiplier, then apply difficulty multiplier
                                 difficulty_multiplier = 1.0
                                 if difficulty_level == 2:
@@ -788,6 +789,9 @@ while running:
                             for block in list(active_blocks):
                                 rect = block["rect"]
                                 if _seg_intersects_rect(prev, curr_pos, rect):
+                                    # Ignore slices for blocks that have already passed the hit line
+                                    if rect.y > hit_y:
+                                        continue
                                     # slice animatie 
                                     bx, by = rect.x, rect.y
                                     bw, bh = rect.width, rect.height

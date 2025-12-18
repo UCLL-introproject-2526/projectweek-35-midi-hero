@@ -104,6 +104,7 @@ scores_file = "scores.json"
 show_scoreboard = False
 scoreboard_entries = []
 current_song_length = 0.0
+end_of_song = False
 
 # ---------- GAME STATE ----------
 started = False
@@ -221,9 +222,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # If scoreboard is showing, any key or click closes it and returns to menu
-        if show_scoreboard and (event.type == pygame.KEYDOWN or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)):
+        # If scoreboard is showing in the main menu, any key or click closes it and returns to menu
+        if show_scoreboard and in_menu and (event.type == pygame.KEYDOWN or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)):
             show_scoreboard = False
+            end_of_song = False
             in_menu = True
             background = None
             player_name = ""
@@ -773,8 +775,24 @@ while running:
             screen.blit(name, name.get_rect(midleft=(cx - 200, y+18)))
             screen.blit(level_txt, level_txt.get_rect(midleft=(cx + 40, y+18)))
             screen.blit(score_txt, score_txt.get_rect(midright=(cx + 240, y+18)))
-        footer = font_small.render("Press any key or click to return to menu", True, (170,170,170))
-        screen.blit(footer, footer.get_rect(center=(cx, screen.get_height() - 60)))
+        # If this is the end-of-song overlay, show Replay and Back buttons
+        if end_of_song and not in_menu:
+            bw, bh = 260, 64
+            spacing = 24
+            left_x = cx - bw - spacing//2
+            right_x = cx + spacing//2
+            y = screen.get_height() - 140
+            replay_rect = pygame.Rect(left_x, y, bw, bh)
+            menu_rect = pygame.Rect(right_x, y, bw, bh)
+            pygame.draw.rect(screen, (40,40,40), replay_rect, border_radius=8)
+            pygame.draw.rect(screen, (40,40,40), menu_rect, border_radius=8)
+            rtxt = font_medium.render("Replay", True, (255,255,255))
+            mtxt = font_medium.render("Back to Menu", True, (255,255,255))
+            screen.blit(rtxt, rtxt.get_rect(center=replay_rect.center))
+            screen.blit(mtxt, mtxt.get_rect(center=menu_rect.center))
+        else:
+            footer = font_small.render("Press any key or click to return to menu", True, (170,170,170))
+            screen.blit(footer, footer.get_rect(center=(cx, screen.get_height() - 60)))
 
     pygame.display.flip()
     clock.tick(60)
@@ -801,8 +819,9 @@ while running:
                 mixer_stopped = not pygame.mixer.music.get_busy()
             except Exception:
                 mixer_stopped = False
-
-            if mixer_stopped or (current_song_length and elapsed_check >= (current_song_length - 0.05)):
+            # Only finish the song if the music stopped (or the elapsed >= length) AND all notes have spawned
+            all_spawned = all(n.get("spawned") for n in notes) if notes else True
+            if (mixer_stopped or (current_song_length and elapsed_check >= (current_song_length - 0.05))) and all_spawned and not active_blocks and not active_pieces:
                 if current_song_key:
                     scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
                 else:
@@ -810,6 +829,7 @@ while running:
                 show_scoreboard = True
                 music_started = False
                 started = False
+                end_of_song = True
     except Exception:
         pass
 
@@ -824,55 +844,97 @@ while running:
             music_started = False
             started = False
             # save score and show scoreboard overlay
-            def _load_scores():
-                try:
-                    import json
-                    if os.path.exists(scores_file):
-                        with open(scores_file, "r", encoding="utf-8") as f:
-                            return json.load(f)
-                except Exception:
-                    pass
-                return {}
-
-            def _save_score(song_key, name, sc, level):
-                try:
-                    import json
-                    scores = _load_scores()
-                    lst = scores.get(song_key, [])
-                    from datetime import datetime
-                    entry = {"name": name, "score": sc, "level": level, "date": datetime.now().isoformat()}
-                    lst.append(entry)
-                    # keep top 50 by score
-                    lst = sorted(lst, key=lambda x: x["score"], reverse=True)[:50]
-                    scores[song_key] = lst
-                    with open(scores_file, "w", encoding="utf-8") as f:
-                        json.dump(scores, f, ensure_ascii=False, indent=2)
-                    return lst
-                except Exception:
-                    return []
-
             if current_song_key:
-                scoreboard_entries = _save_score(current_song_key, player_name or "Player", score, difficulty_level)
+                scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
             else:
                 scoreboard_entries = []
             show_scoreboard = True
+            end_of_song = True
 
     # If scoreboard overlay shown, wait for key to return to menu
     if show_scoreboard:
+        # consume events specifically for the overlay; if this was an end-of-song overlay
+        # offer Replay / Back buttons, otherwise return to menu on any input
         for ev in pygame.event.get():
-            if ev.type == pygame.KEYDOWN or ev.type == pygame.MOUSEBUTTONDOWN:
-                show_scoreboard = False
-                in_menu = True
-                background = None
-                # reset state
-                player_name = ""
-                current_song_key = None
-                active_blocks.clear()
-                active_pieces.clear()
-                notes = []
-                score = 0
-                music_started = False
-                started = False
+            if end_of_song and not in_menu:
+                if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
+                    mx, my = ev.pos
+                    bw, bh = 260, 64
+                    spacing = 24
+                    cx = screen.get_width()//2
+                    left_x = cx - bw - spacing//2
+                    right_x = cx + spacing//2
+                    y = screen.get_height() - 140
+                    replay_rect = pygame.Rect(left_x, y, bw, bh)
+                    menu_rect = pygame.Rect(right_x, y, bw, bh)
+                    if replay_rect.collidepoint(mx, my):
+                        # restart song immediately
+                        active_blocks.clear()
+                        active_pieces.clear()
+                        score = 0
+                        streak = 0
+                        score_multiplier = 1
+                        for n in notes:
+                            if "spawned" in n: del n["spawned"]
+                        # start playback with visual lead time
+                        start_time = time.time()
+                        pause_offset = 0
+                        started = True
+                        paused = False
+                        block_center_offset = MOEILIJKHEID / 2
+                        lead_time = (hit_y - block_center_offset) / PIXELS_PER_SECOND
+                        music_play_time = start_time + lead_time
+                        music_play_scheduled = True
+                        music_started = False
+                        show_scoreboard = False
+                        end_of_song = False
+                        break
+                    elif menu_rect.collidepoint(mx, my):
+                        show_scoreboard = False
+                        end_of_song = False
+                        in_menu = True
+                        background = None
+                        # reset state
+                        player_name = ""
+                        current_song_key = None
+                        active_blocks.clear()
+                        active_pieces.clear()
+                        notes = []
+                        score = 0
+                        music_started = False
+                        started = False
+                        break
+                elif ev.type == pygame.KEYDOWN:
+                    # treat any key as 'back to menu'
+                    show_scoreboard = False
+                    end_of_song = False
+                    in_menu = True
+                    background = None
+                    player_name = ""
+                    current_song_key = None
+                    active_blocks.clear()
+                    active_pieces.clear()
+                    notes = []
+                    score = 0
+                    music_started = False
+                    started = False
+                    break
+            else:
+                if ev.type == pygame.KEYDOWN or ev.type == pygame.MOUSEBUTTONDOWN:
+                    show_scoreboard = False
+                    end_of_song = False
+                    in_menu = True
+                    background = None
+                    # reset state
+                    player_name = ""
+                    current_song_key = None
+                    active_blocks.clear()
+                    active_pieces.clear()
+                    notes = []
+                    score = 0
+                    music_started = False
+                    started = False
+                    break
 
 pygame.quit()
 # Release camera resources if used

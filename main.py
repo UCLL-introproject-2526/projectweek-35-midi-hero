@@ -60,7 +60,7 @@ camera_enabled = False
 cap = None
 mp_hands = None
 hand_hit_cooldown = 0.35
-# last_hand_hit_time will be kept in sync with the active lane count below
+
 last_hand_hit_time = [0.0] * LANES_KEYBOARD
 
 use_camera_controls = False
@@ -93,14 +93,14 @@ songs = find_songs(SONG_DIR)
 if not songs:
     print(f"No songs found in {SONG_DIR}/. Using dummy logic.")
 
-# ---------- SETTINGS STATE ----------
+# ---------- SETTINGS ----------
 difficulty_level = 1
 MOEILIJKHEID = 100  # Startwaarde
 current_color_idx = 0
 show_settings = False
 settings_from_pause = False
 
-# ---------- MENU STATE ----------
+# ---------- MENU ----------
 selected_song = 0
 in_menu = True
 running = True
@@ -113,7 +113,7 @@ show_scoreboard = False
 scoreboard_entries = []
 current_song_length = 0.0
 end_of_song = False
-bar_full_at = None  # timestamp when progress bar first reached 100%
+bar_full_at = None # tijd waarop progress bar 100% is
 
 # ---------- GAME STATE ----------
 started = False
@@ -130,7 +130,7 @@ paused = False
 pause_start = None
 pause_offset = 0
 error_flash = 0  
-pause_button_selected = 0  # 0 = Back, 1 = Settings, 2 = Exit
+pause_button_selected = 0  # 0 = main menu, 1 = settings, 2 = ragequit 
 streak = 0
 last_hand_positions = []
 last_frame_preview = None
@@ -138,18 +138,18 @@ last_frame_preview = None
 # ---------- CONSTANTS ----------
 LANE_SPACING = 20
 lane_width = int(screen.get_width() * 0.12)
-# pixels per second for block movement (must match game_logic)
+
 PIXELS_PER_SECOND = 300
-# lane_area_width and lane_left are computed per-frame based on active lanes
+
 lane_area_width = lane_width * LANES_KEYBOARD + LANE_SPACING * (LANES_KEYBOARD - 1)
 lane_left = (screen.get_width() - lane_area_width) // 2
 hit_y = int(screen.get_height() * 0.8)
 hit_window = 40
 
-# Gear Icon Area
+
 gear_rect = pygame.Rect(screen.get_width() - 80, 30, 50, 50)
 
-# ---------- SCOREBOARD HELPERS ----------
+# ---------- SCOREBOARD ----------
 def _load_scores_file(path):
     try:
         import json
@@ -180,12 +180,9 @@ def save_score_entry(song_key, name, sc, level, path):
     _save_scores_file(path, scores)
     return lst
 
-# ---------- FUNCTIONS ----------
-# load_song and draw_gear moved to separate modules: songs.py and draw_utils.py
+# ---------- zooi ----------
 
 def _seg_intersects_rect(p1, p2, rect):
-    # p1, p2 are (x,y). rect is pygame.Rect
-    # quick check: either endpoint inside rect
     if rect.collidepoint(p1) or rect.collidepoint(p2):
         return True
 
@@ -231,7 +228,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # If scoreboard is showing in the main menu, any key or click closes it and returns to menu
+        
         if show_scoreboard and in_menu and (event.type == pygame.KEYDOWN or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1)):
             show_scoreboard = False
             end_of_song = False
@@ -248,58 +245,65 @@ while running:
             bar_full_at = None
             continue
 
+        # pauze menu
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             if show_settings:
                 show_settings = False
-                # If settings were opened from the pause menu, return to paused gameplay
+
                 if settings_from_pause:
                     in_menu = False
                     paused = True
                     settings_from_pause = False
+
             elif in_menu:
                 running = False
+                
             else:
-                # Toggle pause in-game
                 if not paused:
                     paused = True
                     pause_start = time.time()
                     pause_button_selected = 0
-                    try: pygame.mixer.music.pause()
-                    except: pass
+                    try: 
+                        pygame.mixer.music.pause()
+                    except: 
+                        pass
+
                 else:
                     paused = False
                     if pause_start:
                         pause_offset += time.time() - pause_start
                     pause_start = None
-                    try: pygame.mixer.music.unpause()
-                    except: pass
+                    try: 
+                        pygame.mixer.music.unpause()
+                    except: 
+                        pass
 
-        # -------- MOUSE INPUT (GLOBAL) --------
+        # -------- MOUSE INPUT --------
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mx, my = event.pos
             
-            # 1. Handle Settings Menu Clicks
+            # setting menu clickclickclick
             if in_menu and show_settings:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
                 
-                # Difficulty Rects
+                # moeilijkheid
                 diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
                 diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
                 
-                # Color Rects
+                # kleurtjes
                 col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
                 col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
 
-                # Input method rects
+                # input
                 im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
                 im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
 
-                # Invert camera toggle rect
+                # invert camera dinges
                 inv_label_y = cy + 140
                 inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
                 
-                # Close Button (moved down to make space)
+                # save and close
                 close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
@@ -316,48 +320,43 @@ while running:
                     # select keyboard
                     use_camera_controls = False
                 elif im_right.collidepoint(mx, my):
-                    # try to enable camera if available
                     if camera_available:
                         use_camera_controls = True
                     else:
                         print("Camera not available on this system.")
                 elif inv_rect.collidepoint(mx, my):
-                    # toggle invert
                     camera_inverted = not camera_inverted
                 
                 elif close_rect.collidepoint(mx, my):
                     show_settings = False
-                    # If settings were opened from pause, go back to paused game view
+
                     if settings_from_pause:
                         in_menu = False
                         paused = True
                         settings_from_pause = False
 
-                # Update difficulty constant
+                # moeilijkheid update (lock in)
                 if difficulty_level == 3: MOEILIJKHEID = 50
                 elif difficulty_level == 2: MOEILIJKHEID = 75
                 elif difficulty_level == 1: MOEILIJKHEID = 100
 
-            # 2. Handle Main Menu Clicks (Gear)
+            # main menu settings click handler
             elif in_menu and not show_settings:
                 if gear_rect.collidepoint(mx, my):
                     show_settings = True
                     settings_from_pause = False
 
-            # 2b. Handle Settings overlay clicks while in-game (opened from pause)
+            # settings menu 
             elif show_settings and not in_menu:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
 
-                # Difficulty Rects
                 diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
                 diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
 
-                # Color Rects
                 col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
                 col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
 
-                # Close Button
                 close_rect = pygame.Rect(cx - 100, cy + 120, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
@@ -372,18 +371,17 @@ while running:
 
                 elif close_rect.collidepoint(mx, my):
                     show_settings = False
+
                     if settings_from_pause:
-                        # return to paused gameplay
                         in_menu = False
                         paused = True
                         settings_from_pause = False
 
-                # Update difficulty constant
                 if difficulty_level == 3: MOEILIJKHEID = 50
                 elif difficulty_level == 2: MOEILIJKHEID = 75
                 elif difficulty_level == 1: MOEILIJKHEID = 100
 
-            # 3. Handle Pause Menu Clicks (Back, Settings, Exit)
+            # pauze menu click handler
             elif not in_menu and paused:
                 bw, bh, spacing = 360, 56, 20
                 cx = screen.get_rect().centerx
@@ -398,8 +396,10 @@ while running:
                     in_menu = True
                     background = None
                     show_settings = False
-                    try: pygame.mixer.music.stop()
-                    except: pass
+                    try: 
+                        pygame.mixer.music.stop()
+                    except: 
+                        pass
                     started = False
                     paused = False
                     music_started = False
@@ -409,28 +409,30 @@ while running:
                     for n in notes:
                         if "spawned" in n: del n["spawned"]
                 elif settings_rect.collidepoint(mx, my):
-                    # Open settings from pause without switching to the song-selection menu
+                    # settings vanuit pauze menu
                     show_settings = True
                     settings_from_pause = True
-                    # keep started/paused state so we can return
+
                 elif exit_rect.collidepoint(mx, my):
-                    try: pygame.mixer.music.stop()
-                    except: pass
+                    try: 
+                        pygame.mixer.music.stop()
+                    except: 
+                        pass
                     running = False
 
-        # -------- MENU INPUT (KEYBOARD) --------
+        # -------- KEYBOARD INPUT (menu) --------
         if in_menu and not show_settings:
-            # If awaiting name input overlay, handle typing here
             if awaiting_name:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
                         player_name = player_name[:-1]
+
                     elif event.key == pygame.K_RETURN:
-                        # commit name and start song
                         awaiting_name = False
+
                         if player_name.strip() == "":
                             player_name = "Player"
-                        # load the pending song
+
                         if pending_song_index is not None and songs:
                             bg, notes, length = load_song(songs[pending_song_index], screen)
                             background = bg
@@ -444,11 +446,12 @@ while running:
                             current_song_length = length
                             pending_song_index = None
                             bar_full_at = None
+
                     elif event.key == pygame.K_ESCAPE:
                         awaiting_name = False
                         pending_song_index = None
+
                     else:
-                        # append printable characters
                         if event.unicode and len(player_name) < 20:
                             player_name += event.unicode
                 continue
@@ -456,15 +459,16 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
                     if songs: selected_song = (selected_song + 1) % len(songs)
+
                 elif event.key == pygame.K_UP:
                     if songs: selected_song = (selected_song - 1) % len(songs)
+
                 elif event.key == pygame.K_RETURN:
                     if songs:
-                        # prompt for player name before starting
                         awaiting_name = True
                         pending_song_index = selected_song
 
-        # -------- GAME INPUT (KEYBOARD) --------
+        # -------- KEYBOARD INPUT (game) --------
         if not in_menu:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not started:
                 start_time = time.time()
@@ -472,9 +476,9 @@ while running:
                 paused = False
                 pause_start = None
                 pause_offset = 0
-                # schedule playback after visual lead time so notes match blocks
-                # use block center (half the block height) so the note plays when
-                # the hitline crosses the middle of the block
+
+                # deze shit werkt niet zoals het hoort :(
+
                 block_center_offset = MOEILIJKHEID / 2
                 lead_time = (hit_y - block_center_offset) / PIXELS_PER_SECOND
                 music_play_time = start_time + lead_time
@@ -485,23 +489,21 @@ while running:
                 if event.key in LANE_KEYS:
                     lane_index = LANE_KEYS.index(event.key)
                     
-                    # --- HIER ZAT DE FOUT: VARIABELE NAAM ---
                     hit_any = False
 
                     for block in active_blocks:
                         b_lane = int((block["rect"].centerx - lane_left) // (lane_width + LANE_SPACING))
                         if b_lane == lane_index:
-                            # Use MOEILIJKHEID as hit window (centered check by update_game)
                             if abs(block["rect"].y - hit_y) < MOEILIJKHEID:
                                 score += 100 * score_multiplier
-                                block["color"] = (0, 255, 0)  # green feedback
+                                block["color"] = (0, 255, 0)  # maakt blokje groen op hit
                                 block["hit"] = True
                                 hit_any = True
                                 break
 
+                    # streak multipliers
                     if hit_any:
                         streak += 1
-                        # enable 2x booster when streak reaches 25
                         if streak >= 25:
                             score_multiplier = 2
                         if streak >= 100:
@@ -514,7 +516,7 @@ while running:
                         score -= 20
                         error_flash = 15
 
-            # Mouse hover for pause menu
+            # mouse hover voor pauze menu
             if paused and event.type == pygame.MOUSEMOTION:
                 mx, my = event.pos
                 bw, bh, spacing = 360, 56, 20
@@ -533,7 +535,7 @@ while running:
                 elif exit_rect.collidepoint(mx, my):
                     pause_button_selected = 2
 
-            # Keyboard nav for pause (Back, Settings, Exit)
+            # keyboard controls voor menu
             if paused and event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_DOWN, pygame.K_s):
                     pause_button_selected = (pause_button_selected + 1) % 3
@@ -555,7 +557,7 @@ while running:
                         for n in notes:
                             if "spawned" in n: del n["spawned"]
                     elif pause_button_selected == 1:
-                        # Open settings from pause without switching to song-selection
+                        # settings menu vanuit pauze want we gaan niet elke keer terug naar het main menu he mannekes
                         show_settings = True
                         settings_from_pause = True
                     else:
@@ -571,7 +573,6 @@ while running:
                          use_camera=use_camera_controls, camera_available=camera_available,
                          camera_inverted=camera_inverted)
 
-        # Draw name entry overlay if awaiting_name
         if awaiting_name:
             overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 200))
@@ -588,10 +589,7 @@ while running:
             hint = font_small.render("Press ENTER to confirm — ESC to cancel", True, (180,180,180))
             screen.blit(hint, hint.get_rect(center=(w//2, h//2 + 60)))
 
-        # Draw scoreboard overlay if requested
         if show_scoreboard:
-            # If this scoreboard is shown as end-of-song overlay and a background image
-            # is available, draw it behind the translucent overlay for a nicer look.
             if end_of_song and scoreboard_bg is not None:
                 try:
                     bg_s = pygame.transform.smoothscale(scoreboard_bg, screen.get_size())
@@ -609,6 +607,7 @@ while running:
             screen.blit(sub, sub.get_rect(center=(cx, 120)))
             start_y = 170
             max_show = 10
+
             for i, e in enumerate(scoreboard_entries[:max_show]):
                 rank = font_small.render(f"{i+1}", True, (240,200,50))
                 name = font_medium.render(e.get('name','?'), True, (255,255,255))
@@ -619,6 +618,7 @@ while running:
                 screen.blit(name, name.get_rect(midleft=(cx - 200, y+18)))
                 screen.blit(level_txt, level_txt.get_rect(midleft=(cx + 40, y+18)))
                 screen.blit(score_txt, score_txt.get_rect(midright=(cx + 240, y+18)))
+
             footer = font_small.render("Press any key or click to return to menu", True, (170,170,170))
             screen.blit(footer, footer.get_rect(center=(cx, screen.get_height() - 60)))
 
@@ -627,22 +627,19 @@ while running:
         continue
 
     # ---------- GAME UPDATE ----------
-    # Determine active lanes based on input method and recompute layout
     current_lanes = LANES_CAMERA if (use_camera_controls and camera_available) else LANES_KEYBOARD
-    # Resize hand hit timers if lane count changed
+
     if len(last_hand_hit_time) != current_lanes:
         last_hand_hit_time = [0.0] * current_lanes
 
-    # Recompute lane layout for the active lane count
     lane_area_width = lane_width * current_lanes + LANE_SPACING * (current_lanes - 1)
     lane_left = (screen.get_width() - lane_area_width) // 2
 
-    # Process camera hand input (optional) - Fruit Ninja style slicing for camera mode
     if use_camera_controls and camera_available and started and not paused:
         ret, frame = cap.read()
         if ret:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # apply inversion for preview and mapping if enabled
+
             if camera_inverted:
                 frame_rgb_preview = cv2.flip(frame_rgb, 1)
             else:
@@ -650,13 +647,11 @@ while running:
             last_frame_preview = frame_rgb_preview.copy()
             results = mp_hands.process(frame_rgb)
 
-            # keep previous hand positions to detect motion segments
             prev_hand_positions = list(last_hand_positions)
             last_hand_positions = []
 
             if results.multi_hand_landmarks:
                 for idx, hand_landmarks in enumerate(results.multi_hand_landmarks):
-                    # Use index finger tip (landmark 8) for slice position
                     lm = hand_landmarks.landmark[8]
                     lm_x = 1.0 - lm.x if camera_inverted else lm.x
                     x_pixel = int(lm_x * screen.get_width())
@@ -664,12 +659,11 @@ while running:
                     curr_pos = (x_pixel, y_pixel)
                     last_hand_positions.append(curr_pos)
 
-                    # find a previous point for this hand (prefer same index, else nearest)
                     prev = None
+
                     if idx < len(prev_hand_positions):
                         prev = prev_hand_positions[idx]
                     else:
-                        # find nearest previous point within reasonable distance
                         best = None
                         best_d = None
                         for p in prev_hand_positions:
@@ -681,34 +675,36 @@ while running:
                         if best is not None and best_d < (screen.get_width()*0.25)**2:
                             prev = best
 
-                    # If we have a previous point with meaningful motion, check intersection
                     if prev is not None:
                         dx = curr_pos[0] - prev[0]
                         dy = curr_pos[1] - prev[1]
                         dist2 = dx*dx + dy*dy
-                        MIN_SLICE_DIST = 20  # pixels - require movement to register a slice
+                        MIN_SLICE_DIST = 20  # pixels aan beweging om slice te tellen
                         if dist2 >= (MIN_SLICE_DIST * MIN_SLICE_DIST):
                             for block in list(active_blocks):
                                 rect = block["rect"]
                                 if _seg_intersects_rect(prev, curr_pos, rect):
-                                    # spawn two pieces from block and remove block
+                                    # slice animatie 
                                     bx, by = rect.x, rect.y
                                     bw, bh = rect.width, rect.height
                                     col = block.get("color", (255,255,255))
-                                    # left piece
+
                                     lp = {"rect": pygame.Rect(bx, by, bw//2, bh//2),
                                           "vx": -200 + -50 * (dy/ (abs(dy)+0.001)), "vy": -200,
                                           "color": col, "life": 1.2}
-                                    # right piece
+
                                     rp = {"rect": pygame.Rect(bx + bw//2, by, bw - bw//2, bh//2),
                                           "vx": 200 + 50 * (dy/ (abs(dy)+0.001)), "vy": -200,
                                           "color": col, "life": 1.2}
+                                    
                                     active_pieces.append(lp)
                                     active_pieces.append(rp)
+
                                     try:
                                         active_blocks.remove(block)
                                     except Exception:
                                         pass
+
                                     score += 100 * score_multiplier
                                     streak += 1
                                     if streak >= 25:
@@ -726,33 +722,43 @@ while running:
                    lane_left, lane_width, LANE_SPACING,
                    MOEILIJKHEID, hit_y, music_started,
                    lanes=current_lanes, pixels_per_second=PIXELS_PER_SECOND)
-        # reset streak and trigger error flash on any missed notes removed by the logic
+
         if missed and missed > 0:
             streak = 0
             error_flash = 15
             score_multiplier = 1
 
     # ---------- DRAW GAME ----------
-    # Pass only the active lane labels (camera mode shows fewer lanes)
     active_labels = LANE_LABELS[:current_lanes]
-    # compute elapsed for HUD/progress bar (even when paused we show progress)
+
     elapsed_for_draw = time.time() - start_time - pause_offset if start_time else 0
-    game_draw.render_game(screen, background, BLOCK_COLORS, active_blocks,
-                          active_labels, lane_left, lane_width, LANE_SPACING,
-                          hit_y, font_small, font_big, pause_button_selected,
-                          paused, started, score, streak, error_flash,
+    game_draw.render_game(screen, 
+                          background, 
+                          BLOCK_COLORS, 
+                          active_blocks,
+                          active_labels, 
+                          lane_left, 
+                          lane_width, 
+                          LANE_SPACING,
+                          hit_y, 
+                          font_small, 
+                          font_big, 
+                          pause_button_selected,
+                          paused, 
+                          started, 
+                          score, 
+                          streak, 
+                          error_flash,
                           use_camera=use_camera_controls and camera_available,
                           hand_positions=last_hand_positions,
                           hand_hit_times=last_hand_hit_time,
                           hand_hit_cooldown=hand_hit_cooldown,
                           preview_frame=last_frame_preview,
                           active_pieces=active_pieces,
-                          elapsed=elapsed_for_draw, song_length=current_song_length,
+                          elapsed=elapsed_for_draw, 
+                          song_length=current_song_length,
                           score_multiplier=score_multiplier)
 
-    # Additional robustness: if the progress fraction reaches 100% (visual),
-    # start the same 5s timer to show the scoreboard. This ensures the
-    # scoreboard appears even if notes/blocks logic didn't fully clear.
     try:
         if current_song_length and current_song_length > 0 and not show_scoreboard:
             frac = elapsed_for_draw / current_song_length
@@ -763,8 +769,7 @@ while running:
     except Exception:
         pass
 
-    # Centralized finalization: if bar_full_at was set (by any branch) and 5s passed,
-    # commit score and display scoreboard. This guarantees the overlay appears.
+    # scoreboard 5s nadat progress bar 100% is
     try:
         if bar_full_at is not None and not show_scoreboard:
             if time.time() - bar_full_at >= 5.0:
@@ -773,43 +778,47 @@ while running:
                     scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
                 else:
                     scoreboard_entries = []
+
                 show_scoreboard = True
                 music_started = False
                 started = False
                 end_of_song = True
                 bar_full_at = None
                 print(f"[DEBUG] show_scoreboard=True (central), end_of_song={end_of_song}", flush=True)
+
     except Exception:
         pass
 
-    # If settings opened from pause, render the settings overlay on top of the game
+    # settings overlay OVER de game renderen 
     if show_settings and not in_menu:
-        menu.render_settings_overlay(screen, show_settings, difficulty_level,
-                                    current_color_idx, BLOCK_COLORS,
-                                    font_small, font_medium, font_big)
+        menu.render_settings_overlay(screen, 
+                                     show_settings, 
+                                     difficulty_level,
+                                     current_color_idx, 
+                                     BLOCK_COLORS,
+                                     font_small, 
+                                     font_medium, 
+                                     font_big)
 
-    # If the 5s timer is running (bar_full_at set) but the scoreboard hasn't appeared yet,
-    # draw a fade so the player sees the background dim before the scoreboard appears.
+    # fade-out voor scoreboard
     if bar_full_at is not None and not show_scoreboard:
         try:
             elapsed_since_full = max(0.0, time.time() - bar_full_at)
             t = min(1.0, elapsed_since_full / 5.0)
-            alpha = int(180 * t)  # fade-in alpha over 5 seconds
+            alpha = int(180 * t)  # alpha value fade
             fade = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
             fade.fill((0, 0, 0, alpha))
             screen.blit(fade, (0, 0))
-            # show small countdown text
+
             remaining = max(0, 5 - int(elapsed_since_full))
             info = font_small.render(f"Scoreboard in {remaining}s...", True, (220,220,220))
             screen.blit(info, info.get_rect(center=(screen.get_width()//2, screen.get_height() - 120)))
         except Exception:
             pass
 
-    # Keep decrementing error_flash locally (render_game doesn't mutate it)
     if error_flash > 0:
         error_flash -= 1
 
-    # Update piece physics (simple gravity and lifetime)
     if active_pieces:
         dt = clock.get_time() / 1000.0
         gravity = 800
@@ -818,17 +827,14 @@ while running:
             p["rect"].x += int(p["vx"] * dt)
             p["rect"].y += int(p["vy"] * dt)
             p["life"] -= dt
-            # fade out and remove when life expired or off-screen
+
             if p["life"] <= 0 or p["rect"].y > screen.get_height() + 200:
                 try:
                     active_pieces.remove(p)
                 except Exception:
                     pass
 
-    # If scoreboard overlay is active during gameplay, render it on top before flipping
     if show_scoreboard:
-        # If this scoreboard is shown as end-of-song overlay and a background image
-        # is available, draw it behind the translucent overlay for a nicer look.
         if end_of_song and scoreboard_bg is not None:
             try:
                 bg_s = pygame.transform.smoothscale(scoreboard_bg, screen.get_size())
@@ -856,7 +862,7 @@ while running:
             screen.blit(name, name.get_rect(midleft=(cx - 200, y+18)))
             screen.blit(level_txt, level_txt.get_rect(midleft=(cx + 40, y+18)))
             screen.blit(score_txt, score_txt.get_rect(midright=(cx + 240, y+18)))
-        # If this is the end-of-song overlay, show Replay and Back buttons
+
         if end_of_song and not in_menu:
             bw, bh = 260, 64
             spacing = 24
@@ -878,9 +884,8 @@ while running:
     pygame.display.flip()
     clock.tick(60)
 
-    # Robust end-of-song detection and scheduled playback
+    # ---------- MUSIC ----------
     try:
-        # Start scheduled playback at the visual lead time
         if music_play_scheduled and not music_started and (music_play_time is not None) and time.time() >= music_play_time:
             try:
                 pygame.mixer.music.play()
@@ -889,7 +894,6 @@ while running:
             music_started = True
             music_play_scheduled = False
 
-        # If music has started, detect end via mixer or elapsed vs known song length
         if music_started and not show_scoreboard:
             elapsed_check = 0.0
             if start_time:
@@ -900,15 +904,15 @@ while running:
                 mixer_stopped = not pygame.mixer.music.get_busy()
             except Exception:
                 mixer_stopped = False
-            # Only finish the song if the music stopped (or the elapsed >= length) AND all notes have spawned
+            
+            # registreer einde van nummer als alle noten gespawned zijn en geen muziek meer draait
             all_spawned = all(n.get("spawned") for n in notes) if notes else True
-            # If the track finished (mixer stopped or elapsed >= song length) and the scene is clear,
-            # start a 5s timer from the moment the progress bar reaches 100% before showing scoreboard.
+
             if (mixer_stopped or (current_song_length and elapsed_check >= (current_song_length - 0.05))) and all_spawned and not active_blocks and not active_pieces:
                 if bar_full_at is None:
                     bar_full_at = time.time()
                     print(f"[DEBUG] bar_full_at set from audio branch at {bar_full_at:.3f}, elapsed_check={elapsed_check:.3f}, mixer_stopped={mixer_stopped}")
-                # after 5 seconds, commit score and show scoreboard
+
                 if time.time() - bar_full_at >= 5.0:
                     print(f"[DEBUG] 5s elapsed since bar_full_at (audio branch). Saving score and showing scoreboard.")
                     if current_song_key:
@@ -924,34 +928,34 @@ while running:
     except Exception:
         pass
 
-    # ---------- END-OF-SONG CHECK ----------
-    # When music started and no active blocks left and all notes spawned -> song finished
+    # ---------- EINDE CHECK ----------
     if music_started and not paused and not started:
         pass
+    
     if started and not paused:
         all_spawned = all(n.get("spawned") for n in notes) if notes else True
+
         if all_spawned and not active_blocks and not active_pieces:
-            # Song finished visually — start the 5s post-bar timer if not already running
             if bar_full_at is None:
                 bar_full_at = time.time()
                 print(f"[DEBUG] bar_full_at set from visual branch at {bar_full_at:.3f}")
+
             if time.time() - bar_full_at >= 5.0:
                 print(f"[DEBUG] 5s elapsed since bar_full_at (visual branch). Saving score and showing scoreboard.")
                 music_started = False
                 started = False
+                
                 if current_song_key:
                     scoreboard_entries = save_score_entry(current_song_key, player_name or "Player", score, difficulty_level, scores_file)
                 else:
                     scoreboard_entries = []
+
                 show_scoreboard = True
                 end_of_song = True
                 bar_full_at = None
                 print(f"[DEBUG] show_scoreboard=True, end_of_song={end_of_song}")
 
-    # If scoreboard overlay shown, wait for key to return to menu
     if show_scoreboard:
-        # consume events specifically for the overlay; if this was an end-of-song overlay
-        # offer Replay / Back buttons, otherwise return to menu on any input
         for ev in pygame.event.get():
             if end_of_song and not in_menu:
                 if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
@@ -964,8 +968,8 @@ while running:
                     y = screen.get_height() - 140
                     replay_rect = pygame.Rect(left_x, y, bw, bh)
                     menu_rect = pygame.Rect(right_x, y, bw, bh)
+                    # replay
                     if replay_rect.collidepoint(mx, my):
-                        # restart song immediately
                         active_blocks.clear()
                         active_pieces.clear()
                         score = 0
@@ -973,7 +977,7 @@ while running:
                         score_multiplier = 1
                         for n in notes:
                             if "spawned" in n: del n["spawned"]
-                        # start playback with visual lead time
+
                         start_time = time.time()
                         pause_offset = 0
                         started = True
@@ -987,6 +991,7 @@ while running:
                         end_of_song = False
                         bar_full_at = None
                         break
+
                     elif menu_rect.collidepoint(mx, my):
                         show_scoreboard = False
                         end_of_song = False
@@ -1003,8 +1008,8 @@ while running:
                         started = False
                         bar_full_at = None
                         break
+
                 elif ev.type == pygame.KEYDOWN:
-                    # treat any key as 'back to menu'
                     show_scoreboard = False
                     end_of_song = False
                     in_menu = True
@@ -1018,13 +1023,13 @@ while running:
                     music_started = False
                     started = False
                     break
+
             else:
                 if ev.type == pygame.KEYDOWN or ev.type == pygame.MOUSEBUTTONDOWN:
                     show_scoreboard = False
                     end_of_song = False
                     in_menu = True
                     background = None
-                    # reset state
                     player_name = ""
                     current_song_key = None
                     active_blocks.clear()
@@ -1036,7 +1041,8 @@ while running:
                     break
 
 pygame.quit()
-# Release camera resources if used
+
+# camera usage cleanup
 if 'cap' in globals() and cap is not None:
     try:
         cap.release()

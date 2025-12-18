@@ -11,7 +11,6 @@ from draw_utils import draw_gear
 import cv2
 import ctypes
 
-# schizo
 try:
     import mediapipe as mp
     HAVE_MEDIAPIPE = True
@@ -26,12 +25,13 @@ LANES_CAMERA = 4
 LANE_KEYS = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 LANE_LABELS = ["D", "F", "J", "K"]
 
+# Mogelijke kleuren van blokken
 BLOCK_COLORS = [
-    (0, 200, 200),  # Cyan
-    (255, 50, 50),  # Red
-    (50, 255, 50),  # Green
-    (200, 0, 200),  # Purple
-    (255, 165, 0)   # Orange
+    (0, 200, 200),
+    (255, 50, 50),
+    (50, 255, 50),
+    (200, 0, 200),
+    (255, 165, 0)
 ]
 
 # ---------- INIT ----------
@@ -150,7 +150,7 @@ if not os.path.exists(SONG_DIR):
 songs = find_songs(SONG_DIR)
 
 if not songs:
-    print(f"No songs found in {SONG_DIR}/. Using dummy logic.")
+    print(f"No songs found in {SONG_DIR}")
 
 # ---------- SETTINGS ----------
 difficulty_level = 1
@@ -172,9 +172,9 @@ show_scoreboard = False
 scoreboard_entries = []
 current_song_length = 0.0
 end_of_song = False
-bar_full_at = None # tijd waarop progress bar 100% is
-preview_song_playing = None  # Track which song preview is currently playing
-preview_song_index = None  # Track the index of the currently playing song
+bar_full_at = None # pregress bar is vol
+preview_song_playing = None  # Momenteel gelecteerd liedje
+preview_song_index = None 
 
 # ---------- GAME STATE ----------
 started = False
@@ -200,7 +200,7 @@ last_frame_preview = None
 LANE_SPACING = 20
 lane_width = int(screen.get_width() * 0.12)
 
-PIXELS_PER_SECOND = 300
+PIXELS_PER_SECOND = 300 # Snelheid van de blokken
 
 lane_area_width = lane_width * LANES_KEYBOARD + LANE_SPACING * (LANES_KEYBOARD - 1)
 lane_left = (screen.get_width() - lane_area_width) // 2
@@ -284,6 +284,10 @@ def _seg_intersects_rect(p1, p2, rect):
             return True
 
     return False
+
+
+
+
 # ---------- MAIN LOOP ----------
 background = None
 
@@ -640,7 +644,7 @@ while running:
 
     # ---------- DRAW MENU ----------
     if in_menu:
-        # Handle song preview for selected song
+        # preview toegevoegd van liedjes
         try:
             if selected_song is not None and selected_song < len(songs):
                 selected_song_path = songs[selected_song]["midi"]
@@ -654,7 +658,7 @@ while running:
                     try:
                         pygame.mixer.music.load(selected_song_path)
                         print(f"[DEBUG] Music loaded successfully", flush=True)
-                        pygame.mixer.music.play(-1)  # Loop the preview
+                        pygame.mixer.music.play(-1)  # Opnieuw bveginne
                         print(f"[DEBUG] Music playing (loop -1)", flush=True)
                         preview_song_playing = selected_song_path
                         preview_song_index = selected_song
@@ -726,7 +730,7 @@ while running:
         clock.tick(60)
         continue
 
-    # ---------- GAME UPDATE ----------
+    # ---------- GAME UPDATE MET CAMERA----------
     current_lanes = LANES_CAMERA if (use_camera_controls and camera_available) else LANES_KEYBOARD
 
     if len(last_hand_hit_time) != current_lanes:
@@ -1019,7 +1023,7 @@ while running:
             except Exception:
                 mixer_stopped = False
             
-            # registreer einde van nummer als alle noten gespawned zijn en geen muziek meer draait
+            # einde
             all_spawned = all(n.get("spawned") for n in notes) if notes else True
 
             if (mixer_stopped or (current_song_length and elapsed_check >= (current_song_length - 0.05))) and all_spawned and not active_blocks and not active_pieces:

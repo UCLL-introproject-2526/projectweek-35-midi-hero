@@ -55,6 +55,49 @@ try:
 except Exception:
     scoreboard_bg = None
 
+# Optional cat background for main menu (static first frame of cat.gif)
+cat_bg = None
+try:
+    if os.path.exists("cat.gif"):
+        try:
+            # Try to load animated frames via Pillow
+            from PIL import Image
+            im = Image.open("cat.gif")
+            frames = []
+            durations = []
+            try:
+                while True:
+                    frame = im.convert('RGBA')
+                    fw, fh = frame.size
+                    mode = frame.mode
+                    data = frame.tobytes()
+                    surf = pygame.image.frombuffer(data, (fw, fh), 'RGBA').convert_alpha()
+                    frames.append(surf)
+                    # duration in seconds
+                    dur = im.info.get('duration', 100) / 1000.0
+                    durations.append(dur)
+                    im.seek(im.tell() + 1)
+            except EOFError:
+                pass
+            if frames:
+                cat_bg = {
+                    'frames': frames,
+                    'durations': durations,
+                    'index': 0,
+                    'last_time': time.time()
+                }
+            else:
+                cat_bg = None
+        except Exception:
+            # Pillow not available or failed; fall back to single-frame load
+            try:
+                cat_s = pygame.image.load("cat.gif").convert_alpha()
+                cat_bg = cat_s
+            except Exception:
+                cat_bg = None
+except Exception:
+    cat_bg = None
+
 # ---------- CAMERA / HAND INPUT (optional) ----------
 camera_enabled = False
 cap = None
@@ -287,24 +330,24 @@ while running:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
                 
-                # moeilijkheid
-                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
+                # Difficulty Rects
+                diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
                 
-                # kleurtjes
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                # Color Rects
+                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
-                # input
-                im_left = pygame.Rect(cx - 150, cy + 100, 40, 40)
-                im_right = pygame.Rect(cx + 110, cy + 100, 40, 40)
+                # Input method rects
+                im_left = pygame.Rect(cx - 150, cy + 140, 40, 40)
+                im_right = pygame.Rect(cx + 110, cy + 140, 40, 40)
 
-                # invert camera dinges
-                inv_label_y = cy + 140
-                inv_rect = pygame.Rect(cx - 60, cy + 150, 120, 36)
+                # Invert camera toggle rect
+                inv_label_y = cy + 190
+                inv_rect = pygame.Rect(cx - 60, cy + 210, 120, 36)
                 
-                # save and close
-                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
+                # Close Button (moved down to make space)
+                close_rect = pygame.Rect(cx - 100, cy + 270, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -351,13 +394,16 @@ while running:
                 cx = screen.get_width() // 2
                 cy = screen.get_height() // 2
 
-                diff_left = pygame.Rect(cx - 150, cy - 80, 40, 40)
-                diff_right = pygame.Rect(cx + 110, cy - 80, 40, 40)
+                # Difficulty Rects
+                diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
+                diff_right = pygame.Rect(cx + 110, cy - 100, 40, 40)
 
-                col_left = pygame.Rect(cx - 150, cy + 20, 40, 40)
-                col_right = pygame.Rect(cx + 110, cy + 20, 40, 40)
+                # Color Rects
+                col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
+                col_right = pygame.Rect(cx + 110, cy + 40, 40, 40)
 
-                close_rect = pygame.Rect(cx - 100, cy + 120, 200, 50)
+                # Close Button
+                close_rect = pygame.Rect(cx - 100, cy + 200, 200, 50)
 
                 if diff_left.collidepoint(mx, my):
                     if difficulty_level > 1: difficulty_level -= 1
@@ -571,7 +617,7 @@ while running:
                          difficulty_level, current_color_idx, BLOCK_COLORS,
                          font_small, font_medium, font_big, gear_rect,
                          use_camera=use_camera_controls, camera_available=camera_available,
-                         camera_inverted=camera_inverted)
+                         camera_inverted=camera_inverted, background_image=cat_bg)
 
         if awaiting_name:
             overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)

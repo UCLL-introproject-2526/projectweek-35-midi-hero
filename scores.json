@@ -1,34 +1,16 @@
 {
   "twinkle-twinkle": [
     {
+      "name": "Beter dan Benno",
+      "score": 9100,
+      "level": 2,
+      "date": "2025-12-18T09:25:24.237644"
+    },
+    {
       "name": "Benno",
       "score": 8100,
       "level": 1,
       "date": "2025-12-18T08:19:48.040429"
-    },
-    {
-      "name": "trc",
-      "score": 5880,
-      "level": 1,
-      "date": "2025-12-17T14:31:56.042228"
-    },
-    {
-      "name": "fyhfh",
-      "score": 5300,
-      "level": 1,
-      "date": "2025-12-17T15:18:47.409635"
-    },
-    {
-      "name": "kugj",
-      "score": 3920,
-      "level": 1,
-      "date": "2025-12-17T15:17:37.231780"
-    },
-    {
-      "name": "yt",
-      "score": 3240,
-      "level": 3,
-      "date": "2025-12-17T14:33:30.760369"
     },
     {
       "name": "Vince",
@@ -37,19 +19,19 @@
       "date": "2025-12-17T13:53:10.143655"
     },
     {
-      "name": "wowie",
+      "name": "Maxim",
       "score": 680,
       "level": 1,
       "date": "2025-12-16T15:24:35.169615"
     },
     {
-      "name": "tesr",
+      "name": "test",
       "score": 100,
       "level": 1,
       "date": "2025-12-16T15:10:29.509270"
     },
     {
-      "name": "ela",
+      "name": "elaba",
       "score": 100,
       "level": 1,
       "date": "2025-12-16T15:16:31.323977"
@@ -63,7 +45,7 @@
   ],
   "darude-sandstorm": [
     {
-      "name": "i",
+      "name": "Cederic",
       "score": 6040,
       "level": 1,
       "date": "2025-12-17T10:07:43.601653"

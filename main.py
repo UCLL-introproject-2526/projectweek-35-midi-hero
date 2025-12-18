@@ -556,8 +556,9 @@ while running:
                         if b_lane == lane_index:
                             if abs(block["rect"].y - hit_y) < MOEILIJKHEID:
                                 score += 100 * score_multiplier
-                                block["color"] = (0, 255, 0)  # maakt blokje groen op hit
+                                block["color"] = (0, 255, 0) #GROEN
                                 block["hit"] = True
+                                block["hit_time"] = pygame.time.get_ticks() # Store the start time of the animation
                                 hit_any = True
                                 break
 

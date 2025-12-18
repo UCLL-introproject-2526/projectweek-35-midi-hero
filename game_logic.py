@@ -35,7 +35,7 @@ def update_game(elapsed,
                     break
 
             if not overlap:
-                active_blocks.append({"rect": rect, "color": BLOCK_COLORS[current_color_idx], "time": n["time"]})
+                active_blocks.append({"rect": rect, "hit": False, "hit_time": pygame.time.get_ticks(), "color": BLOCK_COLORS[current_color_idx], "time": n["time"]})
                 n["spawned"] = True
 
     # update blok posities
@@ -48,6 +48,8 @@ def update_game(elapsed,
     miss_threshold = hit_y + int(MOEILIJKHEID * 1.5)
     kept = []
     missed_count = 0
+
+    import math
 
     for block in active_blocks:
         if block.get("hit"):

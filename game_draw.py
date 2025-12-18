@@ -1,5 +1,6 @@
 import pygame
 import time
+import math
 
 
 def render_game(screen, 
@@ -100,9 +101,28 @@ def render_game(screen,
         except Exception:
             pass
 
+    current_time = pygame.time.get_ticks()
+
     if started and not paused:
         for block in active_blocks:
+            draw_rect = block["rect"]
             pygame.draw.rect(screen, block["color"], block["rect"], border_radius=10)
+            if block.get("hit"):
+                elapsed = current_time - block["hit_time"]
+                duration = 300  # Animation lasts 300 milliseconds
+        
+                if elapsed < duration:
+                    # Create a 'Pop' effect using a sine wave (0 to PI)
+                    # This makes it grow and then shrink back to normal size
+                    # math.sin(0) = 0, math.sin(pi) = 0, math.sin(pi/2) = 1 (peak)
+                    timer_ratio = (elapsed / duration) * math.pi
+                    pulse_size = math.sin(timer_ratio) * 20  # Grows up to 20 pixels
+                    draw_rect = block["rect"].inflate(pulse_size, pulse_size)
+                else:
+                # Optional: Remove block or keep it green but stop pulsing
+                    pass
+                pygame.draw.rect(screen, block["color"], draw_rect, border_radius=10)
+            
 
     else:
         for block in active_blocks:

@@ -6,7 +6,7 @@ from draw_utils import draw_gear
 def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                 current_color_idx, BLOCK_COLORS, font_small, font_medium,
                 font_big, gear_rect, use_camera=False, camera_available=False,
-                camera_inverted=False, background_image=None):
+                camera_inverted=False, background_image=None, title_image=None):
     # base background
     screen.fill((20, 20, 30))
     # optional decorative background image (e.g. cat.gif) drawn with partial alpha
@@ -54,8 +54,24 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
             pass
 
     # Title
-    title = font_big.render("MIDI Hero", True, (255, 255, 255))
-    screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 80)))
+    if title_image is not None:
+        try:
+            # Scale title image to fit nicely at top (pixel art - use scale not smoothscale)
+            title_w, title_h = title_image.get_size()
+            max_width = int(screen.get_width() * 0.5)
+            scale = max_width / title_w
+            new_w = int(title_w * scale)
+            new_h = int(title_h * scale)
+            title_img_scaled = pygame.transform.scale(title_image, (new_w, new_h))
+            screen.blit(title_img_scaled, title_img_scaled.get_rect(center=(screen.get_width() // 2, 100)))
+        except Exception:
+            # Fallback to text if image fails
+            title = font_big.render("MIDI Hero", True, (255, 255, 255))
+            screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
+    else:
+        # Text fallback
+        title = font_big.render("MIDI Hero", True, (255, 255, 255))
+        screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
 
     # Gear Icon
     mouse_pos = pygame.mouse.get_pos()
@@ -65,7 +81,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
     draw_gear(screen, gear_rect, gear_color)
 
     # Song List
-    start_y = 180
+    start_y = 240
     if songs:
         for i, song in enumerate(songs):
             color = (255, 215, 0) if i == selected_song else (150, 150, 150)
@@ -93,11 +109,11 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
             panel_w = 420
             panel_h = 300
             panel_x = screen.get_width() - panel_w - 80
-            panel_y = 180
+            panel_y = 200
             panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
             pygame.draw.rect(screen, (30,30,40), panel_rect, border_radius=8)
             pygame.draw.rect(screen, (80,80,100), panel_rect, 2, border_radius=8)
-            hdr = font_medium.render('Top Scores', True, (255,215,0))
+            hdr = font_medium.render('Top Scores', True, (255,255,0))
             screen.blit(hdr, hdr.get_rect(midtop=(panel_rect.centerx, panel_rect.top + 12)))
             y = panel_rect.top + 56
             for i, e in enumerate(entries[:6]):

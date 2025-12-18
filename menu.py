@@ -6,7 +6,7 @@ from draw_utils import draw_gear
 def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                 current_color_idx, BLOCK_COLORS, font_small, font_medium,
                 font_big, gear_rect, use_camera=False, camera_available=False,
-                camera_inverted=False, background_image=None):
+                camera_inverted=False, background_image=None, title_image=None):
     # base background
     screen.fill((20, 20, 30))
     # optional decorative background image (e.g. cat.gif) drawn with partial alpha
@@ -54,10 +54,26 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
             pass
 
     # Title
-    title = font_big.render("MIDI Hero", True, (255, 255, 255))
-    screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 80)))
+    if title_image is not None:
+        try:
+            # Scale title image to fit nicely at top (pixel art - use scale not smoothscale)
+            title_w, title_h = title_image.get_size()
+            max_width = int(screen.get_width() * 0.5)
+            scale = max_width / title_w
+            new_w = int(title_w * scale)
+            new_h = int(title_h * scale)
+            title_img_scaled = pygame.transform.scale(title_image, (new_w, new_h))
+            screen.blit(title_img_scaled, title_img_scaled.get_rect(center=(screen.get_width() // 2, 100)))
+        except Exception:
+            # Fallback to text if image fails
+            title = font_big.render("MIDI Hero", True, (255, 255, 255))
+            screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
+    else:
+        # Text fallback
+        title = font_big.render("MIDI Hero", True, (255, 255, 255))
+        screen.blit(title, title.get_rect(center=(screen.get_width() // 2, 100)))
 
-    # Gear Icon
+    # settings icoon
     mouse_pos = pygame.mouse.get_pos()
     gear_color = (200, 200, 200)
     if gear_rect.collidepoint(mouse_pos) and not show_settings:
@@ -65,7 +81,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
     draw_gear(screen, gear_rect, gear_color)
 
     # Song List
-    start_y = 180
+    start_y = 240
     if songs:
         for i, song in enumerate(songs):
             color = (255, 215, 0) if i == selected_song else (150, 150, 150)
@@ -79,27 +95,30 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                     (rect.left - 30, rect.top),
                     (rect.left - 30, rect.bottom)
                 ])
-        # Show scoreboard preview for the selected song on the right
+        # scoreboard preview per song
         try:
             import json, os
             scores = {}
+
             if os.path.exists('scores.json'):
                 with open('scores.json', 'r', encoding='utf-8') as f:
                     scores = json.load(f)
+
             sel = songs[selected_song]
             key = sel.get('name')
             entries = scores.get(key, [])
-            # draw a small panel
+            
             panel_w = 420
             panel_h = 300
             panel_x = screen.get_width() - panel_w - 80
-            panel_y = 180
+            panel_y = 200
             panel_rect = pygame.Rect(panel_x, panel_y, panel_w, panel_h)
             pygame.draw.rect(screen, (30,30,40), panel_rect, border_radius=8)
             pygame.draw.rect(screen, (80,80,100), panel_rect, 2, border_radius=8)
-            hdr = font_medium.render('Top Scores', True, (255,215,0))
+            hdr = font_medium.render('Top Scores', True, (255,255,0))
             screen.blit(hdr, hdr.get_rect(midtop=(panel_rect.centerx, panel_rect.top + 12)))
             y = panel_rect.top + 56
+
             for i, e in enumerate(entries[:6]):
                 rank = font_small.render(str(i+1), True, (240,200,50))
                 name = font_small.render(e.get('name','?'), True, (230,230,230))
@@ -108,16 +127,18 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                 screen.blit(name, name.get_rect(topleft=(panel_rect.left + 48, y)))
                 screen.blit(sc, sc.get_rect(topright=(panel_rect.right - 12, y)))
                 y += 42
+
             if not entries:
                 hint = font_small.render('No scores yet for this song', True, (160,160,160))
                 screen.blit(hint, hint.get_rect(center=(panel_rect.centerx, panel_rect.centery)))
+
         except Exception:
             pass
     else:
         warn = font_small.render("No songs found in 'songs' folder!", True, (255, 100, 100))
         screen.blit(warn, warn.get_rect(center=(screen.get_width()//2, screen.get_height()//2)))
 
-    # Settings Overlay
+    # settings overlay
     if show_settings:
         overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 200))
@@ -129,9 +150,11 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         pygame.draw.rect(screen, (40, 40, 50), box_rect, border_radius=15)
         pygame.draw.rect(screen, (100, 100, 120), box_rect, 3, border_radius=15)
 
+        # settings opties
         s_title = font_medium.render("SETTINGS", True, (255, 255, 255))
         screen.blit(s_title, s_title.get_rect(center=(cx, cy - 180)))
 
+        # moeiljkheid selector
         d_label = font_small.render("DIFFICULTY", True, (180, 180, 180))
         screen.blit(d_label, d_label.get_rect(center=(cx, cy - 130)))
         diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
@@ -143,6 +166,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 215, 0))
         screen.blit(d_val, d_val.get_rect(center=(cx, cy - 50)))
 
+        # kleur selector
         c_label = font_small.render("BLOCK COLOR", True, (180, 180, 180))
         screen.blit(c_label, c_label.get_rect(center=(cx, cy + 10)))
         col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)
@@ -156,7 +180,7 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         pygame.draw.rect(screen, BLOCK_COLORS[current_color_idx], preview_rect, border_radius=10)
         pygame.draw.rect(screen, (255, 255, 255), preview_rect, 2, border_radius=10)
 
-        # Input method toggle
+        # input method selector
         im_label = font_small.render("INPUT METHOD", True, (180, 180, 180))
         screen.blit(im_label, im_label.get_rect(center=(cx, cy + 110)))
         im_left = pygame.Rect(cx - 150, cy + 140, 40, 40)
@@ -166,12 +190,14 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         screen.blit(font_small.render("<", True, (255,255,255)), font_small.render("<", True, (255,255,255)).get_rect(center=im_left.center))
         screen.blit(font_small.render(">", True, (255,255,255)), font_small.render(">", True, (255,255,255)).get_rect(center=im_right.center))
         im_text = "Camera" if use_camera else "Keyboard"
+
         if use_camera and not camera_available:
             im_text = "Camera (Unavailable)"
+
         im_val = font_medium.render(im_text, True, (255, 215, 0))
         screen.blit(im_val, im_val.get_rect(center=(cx, cy + 160)))
 
-        # Invert camera toggle
+        # invert camera
         inv_label = font_small.render("INVERT CAMERA", True, (180, 180, 180))
         screen.blit(inv_label, inv_label.get_rect(center=(cx, cy + 190)))
         inv_rect = pygame.Rect(cx - 60, cy + 210, 120, 36)
@@ -190,12 +216,18 @@ def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
         screen.blit(close_txt, close_txt.get_rect(center=close_rect.center))
 
 
-def render_settings_overlay(screen, show_settings, difficulty_level,
-                           current_color_idx, BLOCK_COLORS,
-                           font_small, font_medium, font_big):
-    # Draw only the translucent settings overlay (does not clear the screen)
+def render_settings_overlay(screen, 
+                            show_settings, 
+                            difficulty_level,
+                            current_color_idx, 
+                            BLOCK_COLORS,
+                            font_small, 
+                            font_medium, 
+                            font_big):
+    
     if not show_settings:
         return
+    
     mouse_pos = pygame.mouse.get_pos()
     overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 200))
@@ -207,9 +239,11 @@ def render_settings_overlay(screen, show_settings, difficulty_level,
     pygame.draw.rect(screen, (40, 40, 50), box_rect, border_radius=15)
     pygame.draw.rect(screen, (100, 100, 120), box_rect, 3, border_radius=15)
 
+    # settings opties
     s_title = font_medium.render("SETTINGS", True, (255, 255, 255))
     screen.blit(s_title, s_title.get_rect(center=(cx, cy - 180)))
 
+    # moeilijkheid selector
     d_label = font_small.render("DIFFICULTY", True, (180, 180, 180))
     screen.blit(d_label, d_label.get_rect(center=(cx, cy - 130)))
     diff_left = pygame.Rect(cx - 150, cy - 100, 40, 40)
@@ -221,6 +255,7 @@ def render_settings_overlay(screen, show_settings, difficulty_level,
     d_val = font_medium.render(f"Level {difficulty_level}", True, (255, 215, 0))
     screen.blit(d_val, d_val.get_rect(center=(cx, cy - 50)))
 
+    # kleur selector
     c_label = font_small.render("BLOCK COLOR", True, (180, 180, 180))
     screen.blit(c_label, c_label.get_rect(center=(cx, cy + 10)))
     col_left = pygame.Rect(cx - 150, cy + 40, 40, 40)

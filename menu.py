@@ -6,7 +6,7 @@ from draw_utils import draw_gear
 def render_menu(screen, songs, selected_song, show_settings, difficulty_level,
                 current_color_idx, BLOCK_COLORS, font_small, font_medium,
                 font_big, gear_rect, use_camera=False, camera_available=False,
-                camera_inverted=False, background_image=None, title_image=None):
+                camera_inverted=False, background_image=None, title_image=None, currently_playing_song=None):
     # base background
     screen.fill((20, 20, 30))
     # optional decorative background image (e.g. cat.gif) drawn with partial alpha

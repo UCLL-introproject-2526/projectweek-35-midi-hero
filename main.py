@@ -173,6 +173,8 @@ scoreboard_entries = []
 current_song_length = 0.0
 end_of_song = False
 bar_full_at = None # tijd waarop progress bar 100% is
+preview_song_playing = None  # Track which song preview is currently playing
+preview_song_index = None  # Track the index of the currently playing song
 
 # ---------- GAME STATE ----------
 started = False
@@ -638,11 +640,38 @@ while running:
 
     # ---------- DRAW MENU ----------
     if in_menu:
+        # Handle song preview for selected song
+        try:
+            if selected_song is not None and selected_song < len(songs):
+                selected_song_path = songs[selected_song]["midi"]
+                print(f"[DEBUG] Selected song {selected_song}: {selected_song_path}, currently playing: {preview_song_playing}", flush=True)
+                if selected_song_path != preview_song_playing:
+                    print(f"[DEBUG] Song changed, loading new preview...", flush=True)
+                    try:
+                        pygame.mixer.music.stop()
+                    except Exception as e:
+                        print(f"[DEBUG] Error stopping music: {e}", flush=True)
+                    try:
+                        pygame.mixer.music.load(selected_song_path)
+                        print(f"[DEBUG] Music loaded successfully", flush=True)
+                        pygame.mixer.music.play(-1)  # Loop the preview
+                        print(f"[DEBUG] Music playing (loop -1)", flush=True)
+                        preview_song_playing = selected_song_path
+                        preview_song_index = selected_song
+                    except Exception as e:
+                        print(f"[DEBUG] Error loading/playing music: {e}", flush=True)
+                        preview_song_playing = None
+                        preview_song_index = None
+        except Exception as e:
+            print(f"[DEBUG] Exception in preview handler: {e}", flush=True)
+            pass
+        
         menu.render_menu(screen, songs, selected_song, show_settings,
                          difficulty_level, current_color_idx, BLOCK_COLORS,
                          font_small, font_medium, font_big, gear_rect,
                          use_camera=use_camera_controls, camera_available=camera_available,
-                         camera_inverted=camera_inverted, background_image=cat_bg, title_image=title_img)
+                         camera_inverted=camera_inverted, background_image=cat_bg, title_image=title_img,
+                         currently_playing_song=preview_song_index)
 
         if awaiting_name:
             overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)

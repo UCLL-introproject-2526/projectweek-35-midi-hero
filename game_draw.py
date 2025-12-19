@@ -198,6 +198,7 @@ def render_game(screen,
         border.fill((255, 0, 0, 50))
         screen.blit(border, (0, 0))
 
+
     # scoreboard overlay registration
     try:
         if kwargs := {}:

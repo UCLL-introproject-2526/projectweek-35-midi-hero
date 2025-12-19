@@ -1,10 +1,64 @@
 {
   "twinkle-twinkle": [
     {
+      "name": "barry",
+      "score": 17600,
+      "level": 1,
+      "date": "2025-12-19T14:29:23.157889"
+    },
+    {
+      "name": "bram",
+      "score": 14000,
+      "level": 1,
+      "date": "2025-12-19T13:34:28.614264"
+    },
+    {
+      "name": "Vince",
+      "score": 13650,
+      "level": 3,
+      "date": "2025-12-19T09:21:27.636138"
+    },
+    {
+      "name": "barry",
+      "score": 12800,
+      "level": 1,
+      "date": "2025-12-19T14:28:40.905443"
+    },
+    {
       "name": "Britt",
       "score": 11060,
       "level": 3,
       "date": "2025-12-18T11:00:07.874839"
+    },
+    {
+      "name": "Benno",
+      "score": 10650,
+      "level": 3,
+      "date": "2025-12-19T14:43:36.310975"
+    },
+    {
+      "name": "felix",
+      "score": 10500,
+      "level": 3,
+      "date": "2025-12-19T14:57:33.197980"
+    },
+    {
+      "name": "caroline",
+      "score": 10300,
+      "level": 1,
+      "date": "2025-12-19T13:39:40.533775"
+    },
+    {
+      "name": "Saf",
+      "score": 9450,
+      "level": 3,
+      "date": "2025-12-19T14:59:26.350532"
+    },
+    {
+      "name": "danye",
+      "score": 9150,
+      "level": 3,
+      "date": "2025-12-19T14:48:58.463032"
     },
     {
       "name": "Beter dan Benno",
@@ -13,10 +67,160 @@
       "date": "2025-12-18T09:25:24.237644"
     },
     {
+      "name": "Alina",
+      "score": 9100,
+      "level": 1,
+      "date": "2025-12-19T13:35:25.506938"
+    },
+    {
+      "name": "sven",
+      "score": 8400,
+      "level": 1,
+      "date": "2025-12-19T13:29:48.612994"
+    },
+    {
       "name": "Benno",
       "score": 8100,
       "level": 1,
       "date": "2025-12-18T08:19:48.040429"
+    },
+    {
+      "name": "Seppe",
+      "score": 8000,
+      "level": 1,
+      "date": "2025-12-19T14:37:28.692645"
+    },
+    {
+      "name": "bram",
+      "score": 7800,
+      "level": 1,
+      "date": "2025-12-19T13:33:49.193301"
+    },
+    {
+      "name": "jaro",
+      "score": 7800,
+      "level": 3,
+      "date": "2025-12-19T14:56:41.022818"
+    },
+    {
+      "name": "samy",
+      "score": 7700,
+      "level": 1,
+      "date": "2025-12-19T14:11:38.597563"
+    },
+    {
+      "name": "atakan",
+      "score": 6800,
+      "level": 1,
+      "date": "2025-12-19T14:27:37.627044"
+    },
+    {
+      "name": "Lucky",
+      "score": 6600,
+      "level": 1,
+      "date": "2025-12-19T14:06:35.970338"
+    },
+    {
+      "name": "samy",
+      "score": 6600,
+      "level": 1,
+      "date": "2025-12-19T14:12:18.915806"
+    },
+    {
+      "name": "Trump",
+      "score": 6500,
+      "level": 1,
+      "date": "2025-12-19T13:15:48.624080"
+    },
+    {
+      "name": "bram",
+      "score": 6500,
+      "level": 1,
+      "date": "2025-12-19T13:33:08.184733"
+    },
+    {
+      "name": "gavin",
+      "score": 6300,
+      "level": 1,
+      "date": "2025-12-19T13:36:59.496693"
+    },
+    {
+      "name": "lander",
+      "score": 6200,
+      "level": 1,
+      "date": "2025-12-19T13:27:10.976678"
+    },
+    {
+      "name": "Wouter",
+      "score": 5900,
+      "level": 1,
+      "date": "2025-12-19T13:21:42.492844"
+    },
+    {
+      "name": "atakan",
+      "score": 5700,
+      "level": 1,
+      "date": "2025-12-19T14:25:24.975763"
+    },
+    {
+      "name": "Britt",
+      "score": 5200,
+      "level": 1,
+      "date": "2025-12-19T09:20:41.862392"
+    },
+    {
+      "name": "lander",
+      "score": 4700,
+      "level": 1,
+      "date": "2025-12-19T13:27:56.040959"
+    },
+    {
+      "name": "ffswdefrgty",
+      "score": 4100,
+      "level": 1,
+      "date": "2025-12-19T13:25:32.124638"
+    },
+    {
+      "name": "atakan",
+      "score": 4100,
+      "level": 1,
+      "date": "2025-12-19T14:26:12.884807"
+    },
+    {
+      "name": "lav",
+      "score": 3900,
+      "level": 1,
+      "date": "2025-12-19T14:19:35.510906"
+    },
+    {
+      "name": "Seppe",
+      "score": 3700,
+      "level": 1,
+      "date": "2025-12-19T14:38:09.550672"
+    },
+    {
+      "name": "orestis",
+      "score": 3600,
+      "level": 1,
+      "date": "2025-12-19T13:48:03.178909"
+    },
+    {
+      "name": "lav",
+      "score": 1500,
+      "level": 1,
+      "date": "2025-12-19T14:18:53.788422"
+    },
+    {
+      "name": "Tavish",
+      "score": 1400,
+      "level": 1,
+      "date": "2025-12-19T13:44:55.554467"
+    },
+    {
+      "name": "samy",
+      "score": 1300,
+      "level": 1,
+      "date": "2025-12-19T14:11:00.833705"
     },
     {
       "name": "Vince",
@@ -29,6 +233,18 @@
       "score": 680,
       "level": 1,
       "date": "2025-12-16T15:24:35.169615"
+    },
+    {
+      "name": "samy",
+      "score": 0,
+      "level": 1,
+      "date": "2025-12-19T14:10:22.272274"
+    },
+    {
+      "name": "atakan",
+      "score": 0,
+      "level": 1,
+      "date": "2025-12-19T14:24:47.420194"
     }
   ],
   "darude-sandstorm": [
@@ -65,6 +281,12 @@
       "date": "2025-12-17T09:04:05.497431"
     },
     {
+      "name": "Lucky",
+      "score": 21360,
+      "level": 1,
+      "date": "2025-12-19T14:04:07.695982"
+    },
+    {
       "name": "Britt",
       "score": 20020,
       "level": 1,
@@ -72,6 +294,12 @@
     }
   ],
   "never-gonna-give-you-up": [
+    {
+      "name": "caroline",
+      "score": 162480,
+      "level": 1,
+      "date": "2025-12-19T13:43:44.070392"
+    },
     {
       "name": "josef",
       "score": 53780,
@@ -94,16 +322,48 @@
     }
   ],
   "cruel-angels-thesis": [],
-  "rush-e": [],
+  "rush-e": [
+    {
+      "name": "barry",
+      "score": 127900,
+      "level": 1,
+      "date": "2025-12-19T14:32:23.855263"
+    },
+    {
+      "name": "orestis",
+      "score": 108500,
+      "level": 1,
+      "date": "2025-12-19T13:51:05.365341"
+    },
+    {
+      "name": "balls",
+      "score": 95400,
+      "level": 1,
+      "date": "2025-12-19T09:18:00.273262"
+    }
+  ],
   "oya-lele-k3": [
     {
       "name": "skibdidi gooner",
       "score": 40780,
       "level": 1,
       "date": "2025-12-17T13:11:31.294681"
+    },
+    {
+      "name": "gavin",
+      "score": 31940,
+      "level": 1,
+      "date": "2025-12-19T13:38:17.079142"
     }
   ],
-  "super-mario": [],
+  "super-mario": [
+    {
+      "name": "balls",
+      "score": 32000,
+      "level": 1,
+      "date": "2025-12-19T09:19:41.165406"
+    }
+  ],
   "wii-shopping-channel": [
     {
       "name": "Vince",
@@ -118,13 +378,40 @@
       "date": "2025-12-17T14:36:46.154759"
     }
   ],
-  "naruto": [],
+  "naruto": [
+    {
+      "name": "serhat",
+      "score": 16200,
+      "level": 1,
+      "date": "2025-12-19T13:19:51.419138"
+    },
+    {
+      "name": "gorg floyd",
+      "score": 9700,
+      "level": 1,
+      "date": "2025-12-19T13:57:26.571049"
+    }
+  ],
   "hes-a-pirate": [
     {
       "name": "vsdqsdiopfj",
       "score": 35420,
       "level": 1,
       "date": "2025-12-18T11:48:06.176412"
+    }
+  ],
+  "Free Bird (Guitar Solo)": [
+    {
+      "name": "Lucky",
+      "score": 138500,
+      "level": 1,
+      "date": "2025-12-19T14:01:42.119000"
+    },
+    {
+      "name": "Lucky",
+      "score": 0,
+      "level": 1,
+      "date": "2025-12-19T13:59:10.641785"
     }
   ]
 }
